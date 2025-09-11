@@ -2,21 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Contact</title>
+    <title>Contact | Isaac Hennessey</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <h1>Contact</h1>
-    </header>
+    <nav class="navbar">
+        <a href="index.html">Home</a>
+        <a href="projects.html">Projects</a>
+        <a href="bio.html">Bio</a>
+        <a href="contact.html">Contact</a>
+        <a href="resume.html">Resume</a>
+        <a href="https://github.com/hennessey123/335project" target="_blank">335 Project</a>
+        <a href="https://github.com/hennessey123/bombardillocrocadillo" target="_blank">Bomber Game</a>
+    </nav>
     <main>
-        <section>
-            <p>You can reach me at <a href="mailto:your.email@example.com">your.email@example.com</a></p>
+        <h1>Contact Me</h1>
+        <section class="contact-section">
+            <p>You can reach me via email or send a message using the form below:</p>
+            <ul>
+                <li><strong>Email:</strong> <a href="mailto:your@email.com">xcisaac@icloud.com</a></li>
+                <li><strong>GitHub:</strong> <a href="https://github.com/hennessey123" target="_blank">hennessey123</a></li>
+            </ul>
+            <form class="contact-form" action="mailto:your@email.com" method="POST" enctype="text/plain">
+                <label for="name">Your Name:</label>
+                <input type="text" id="name" name="name" required>
+                
+                <label for="email">Your Email:</label>
+                <input type="email" id="email" name="email" required>
+                
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+                
+                <button type="submit">Send Message</button>
+            </form>
         </section>
-        <a href="index.html">Back to Home</a>
     </main>
     <footer>
-        <p>&copy; 2025 My Portfolio</p>
+        <p>&copy; 2025 Isaac Hennessey</p>
     </footer>
 </body>
 </html>
