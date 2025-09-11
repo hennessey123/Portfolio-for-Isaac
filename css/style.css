@@ -1,29 +1,101 @@
-.navbar {
-    display: flex;
-    background: #171a21;
-    padding: 0.8em 2em;
-    justify-content: center;
-    gap: 1.5em;
-    border-bottom: 2px solid #44baff;
-    position: sticky;
-    top: 0;
-    z-index: 10;
+:root {
+    --bg: #181a20;
+    --fg: #e9e9f4;
+    --accent: #6fc2ff;
+    --card-bg: #23263a;
+    --card-hover: #33406e;
+    --shadow: 0 2px 16px rgba(22,80,150,0.20);
 }
-.navbar a {
-    color: #44baff;
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+nav.navbar {
+    display: flex;
+    gap: 1em;
+    background: #15151a;
+    padding: 1em 2em;
+    box-shadow: var(--shadow);
+}
+
+nav.navbar a {
+    color: var(--accent);
     text-decoration: none;
-    font-weight: bold;
-    font-size: 1.05em;
-    padding: 0.3em 0.7em;
+    padding: 0.5em 1em;
     border-radius: 6px;
     transition: background 0.2s, color 0.2s;
 }
-.navbar a:hover {
-    background: #44baff;
-    color: #171a21;
+
+nav.navbar a:hover, .hover-card:hover {
+    background: var(--accent);
+    color: #181a20;
 }
-body {
-    background: #181a1b;
-    color: #e9f1fb;
-    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+
+header {
+    text-align: center;
+    margin: 2em 0 1em 0;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2em;
+}
+
+.hover-box, .hover-card {
+    background: var(--card-bg);
+    color: var(--fg);
+    padding: 2em;
+    margin: 1em;
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    cursor: pointer;
+    min-width: 220px;
+    text-align: center;
+}
+
+.hover-box:hover, .hover-card:hover {
+    background: var(--card-hover);
+    box-shadow: 0 4px 24px rgba(120,180,255,0.21);
+    transform: scale(1.05) rotate(-2deg);
+}
+
+.github-links {
+    width: 100%;
+    max-width: 900px;
+    margin: 2em auto;
+}
+
+.project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    justify-content: center;
+}
+
+footer {
+    text-align: center;
+    padding: 2em 0;
+    color: #7b7e8f;
+    background: #14141b;
+    margin-top: 3em;
+}
+
+/* Custom cursor styles (hidden default cursor) */
+body, canvas {
+    cursor: none;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+    main, .github-links { gap: 1em; }
+    .hover-box, .hover-card { padding: 1em; min-width: 130px; }
 }
