@@ -1,3 +1,19 @@
+.small-logos {
+    gap: 18px !important;
+    margin-bottom: 0.5em !important;
+}
+
+.small-logo-img {
+    width: 32px !important;
+    height: 32px !important;
+    margin-bottom: 0 !important;
+}
+
+.small-logos .logo-3d {
+    padding: 0.5em 0.5em 0.2em 0.5em;
+    min-width: unset;
+    box-shadow: 0 2px 12px rgba(22,80,150,0.15), 0 1px 4px rgba(111,194,255,0.08);
+}
 :root {
     --bg: #181a20;
     --fg: #e9e9f4;
@@ -65,6 +81,7 @@ body {
 }
 
 .logo-label {
+    
     color: var(--accent);
     font-weight: 600;
     font-size: 1.1em;
