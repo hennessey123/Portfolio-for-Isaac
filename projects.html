@@ -2,9 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Projects | Isaac Hennessey</title>
+    <title>Isaac Hennessey | Projects</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        main {
+            position: relative;
+            z-index: 1;
+        }
+        #floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -13,27 +28,26 @@
         <a href="bio.html">Bio</a>
         <a href="contact.html">Contact</a>
         <a href="resume.html">Resume</a>
-        <a href="https://github.com/hennessey123/335project" target="_blank">335 Project</a>
-        <a href="https://github.com/hennessey123/bombardillocrocadillo" target="_blank">Bomber Game</a>
     </nav>
+    <header>
+        <h1>Projects</h1>
+    </header>
     <main>
-        <h1>My Projects</h1>
-        <div class="projects-list">
-            <section class="project-card">
-                <h2>335 Project</h2>
-                <p>A full-stack project for course 335. Features complex backend and front-end engineering.</p>
-                <a href="https://github.com/hennessey123/335project" target="_blank">View on GitHub</a>
-            </section>
-            <section class="project-card">
-                <h2>Bomber Game</h2>
-                <p>An arcade-style game written in Python. Explosive fun and challenging gameplay!</p>
-                <a href="https://github.com/hennessey123/bombardillocrocadillo" target="_blank">View on GitHub</a>
-            </section>
-            <!-- Add more projects here -->
-        </div>
+        <canvas id="floating-shapes"></canvas>
+        <section class="project-list">
+            <h2>Featured Projects</h2>
+            <ul>
+                <li><a href="https://github.com/hennessey123/335project" target="_blank">335 Project</a></li>
+                <li><a href="https://github.com/hennessey123/bombardillocrocadillo" target="_blank">Bomber Game</a></li>
+                <li><a href="https://github.com/hennessey123/hennessey123.github.io" target="_blank">Personal Website Repo</a></li>
+                <li><a href="https://github.com/praiseisaac/senior-seminar-demo" target="_blank">Senior Seminar Demo</a></li>
+                <li><a href="https://github.com/afraiddocument/Mobilized-Food-Trucks-Project" target="_blank">Food Trucks Project</a></li>
+            </ul>
+        </section>
     </main>
     <footer>
         <p>&copy; 2025 Isaac Hennessey</p>
     </footer>
+    <script src="js/interactive.js"></script>
 </body>
 </html>
