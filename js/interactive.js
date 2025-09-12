@@ -1,23 +1,27 @@
+const main = document.querySelector('main');
 const canvas = document.getElementById('floating-shapes');
 const ctx = canvas.getContext('2d');
 let shapes = [];
 let drawing = false;
-let mouse = { x: window.innerWidth/2, y: window.innerHeight/2 };
+let mouse = { x: 0, y: 0 };
 
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // Use main dimensions, not window
+    canvas.width = main.offsetWidth;
+    canvas.height = main.offsetHeight;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-document.addEventListener('mousemove', (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
+// Mouse position relative to main
+main.addEventListener('mousemove', (e) => {
+    const rect = main.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
 });
 
-document.addEventListener('mousedown', () => { drawing = true; });
-document.addEventListener('mouseup', () => { drawing = false; });
+main.addEventListener('mousedown', () => { drawing = true; });
+main.addEventListener('mouseup', () => { drawing = false; });
 
 function randomShapeType() {
     const types = ['circle', 'square', 'triangle'];
@@ -25,7 +29,6 @@ function randomShapeType() {
 }
 
 function drawCursor() {
-    // Draw minimalistic glowing cursor
     ctx.save();
     ctx.shadowColor = "#6fc2ff";
     ctx.shadowBlur = 20;
