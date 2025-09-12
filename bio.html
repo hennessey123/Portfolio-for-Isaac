@@ -2,9 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>About Me | Isaac Hennessey</title>
+    <title>About Isaac Hennessey</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        main {
+            position: relative;
+            z-index: 1;
+        }
+        #floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -13,28 +28,22 @@
         <a href="bio.html">Bio</a>
         <a href="contact.html">Contact</a>
         <a href="resume.html">Resume</a>
-        <a href="https://github.com/hennessey123/335project" target="_blank">335 Project</a>
-        <a href="https://github.com/hennessey123/bombardillocrocadillo" target="_blank">Bomber Game</a>
     </nav>
+    <header>
+        <h1>About Isaac Hennessey</h1>
+    </header>
     <main>
-        <h1>About Me</h1>
-        <section class="bio-section">
-            <img src="profile.jpg" alt="Isaac Hennessey" class="bio-photo" style="max-width:160px;border-radius:50%;margin-bottom:1em;">
-            <h2>Isaac Hennessey</h2>
+        <canvas id="floating-shapes"></canvas>
+        <section class="bio-summary">
+            <h2>Bio</h2>
             <p>
-                Hello! I'm Isaac, a passionate software developer and lifelong learner. My interests include web development, game design, and exploring new technologies.<br>
-                I enjoy collaborating on open source projects and have contributed to several class and personal projects, including the 335 full-stack project and an arcade-style bomber game.<br>
-                In my free time, I like hiking, playing strategy games, and tinkering with code challenges.
+                Isaac Hennessey is a digital creator specializing in web development, interactive media, and creative technology.
             </p>
-            <ul>
-                <li><strong>Location:</strong> Washington, USA</li>
-                <li><strong>GitHub:</strong> <a href="https://github.com/hennessey123" target="_blank">hennessey123</a></li>
-                <li><strong>Email:</strong> <a href="mailto:your@email.com">your@email.com</a></li>
-            </ul>
         </section>
     </main>
     <footer>
         <p>&copy; 2025 Isaac Hennessey</p>
     </footer>
+    <script src="js/interactive.js"></script>
 </body>
 </html>
