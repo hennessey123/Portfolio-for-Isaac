@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <canvas id="floating-shapes"></canvas>
+    <!-- Floating shapes canvas, styled to fill the viewport and sit behind other content -->
+    <canvas id="floating-shapes" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;"></canvas>
     <nav class="navbar">
         <a href="index.html">Home</a>
         <a href="projects.html">Projects</a>
@@ -47,6 +48,7 @@
     <footer>
         <p>&copy; 2025 Isaac Hennessey</p>
     </footer>
+    <!-- Scripts loaded at the end, after all DOM elements exist -->
     <script src="js/interactive.js"></script>
 </body>
 </html>
