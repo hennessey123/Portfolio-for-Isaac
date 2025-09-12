@@ -22,27 +22,7 @@
     </style>
 </head>
 <body>
-    <section id="skills" style="margin: 2em 0 1em 0;">
-        <h2 style="text-align:center;">Technical Skills</h2>
-        <div style="display: flex; gap: 20px; justify-content: center; align-items: center;">
-            <div style="text-align: center;">
-                <img src="images/python-logo.png" alt="Python" width="48" height="48">
-                <div>Python</div>
-            </div>
-            <div style="text-align: center;">
-                <img src="images/java-logo.png" alt="Java" width="48" height="48">
-                <div>Java</div>
-            </div>
-            <div style="text-align: center;">
-                <img src="images/sql-logo.png" alt="SQL" width="48" height="48">
-                <div>SQL</div>
-            </div>
-            <div style="text-align: center;">
-                <img src="images/postgresql-logo.png" alt="PostgreSQL" width="48" height="48">
-                <div>PostgreSQL</div>
-            </div>
-        </div>
-    </section>
+   
     <nav class="navbar">
         <a href="index.html">Home</a>
         <a href="projects.html">Projects</a>
@@ -57,6 +37,27 @@
     <main>
         <!-- Canvas for floating shapes, now only behind main sections -->
         <canvas id="floating-shapes"></canvas>
+        <section>
+                <h2 style="text-align:center;">Technical Skills</h2>
+                <div class="skills-3d-container">
+                    <div class="logo-3d floating" title="Python">
+                        <img src="images/python-logo.png" alt="Python" class="logo-img">
+                        <div class="logo-label">Python</div>
+                    </div>
+                    <div class="logo-3d floating" title="Java">
+                        <img src="images/java-logo.png" alt="Java" class="logo-img">
+                        <div class="logo-label">Java</div>
+                    </div>
+                    <div class="logo-3d floating" title="SQL">
+                        <img src="images/sql-logo.png" alt="SQL" class="logo-img">
+                        <div class="logo-label">SQL</div>
+                    </div>
+                    <div class="logo-3d floating" title="PostgreSQL">
+                        <img src="images/postgresql-logo.png" alt="PostgreSQL" class="logo-img">
+                        <div class="logo-label">PostgreSQL</div>
+                    </div>
+                </div>
+            </section>
 
         <section class="hover-box">
             <h2 href="projects.html">Projects</h2>
