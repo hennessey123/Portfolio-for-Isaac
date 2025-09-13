@@ -96,107 +96,193 @@ const ctx = canvas.getContext('2d');
 const width = canvas.width;
 const height = canvas.height;
 
-let isDrawing = false;
-let waveParams = null; // { amplitude, wavelength, color }
-let osc = null;
-let rhythmTimer = null;
-const baseColor = '#6fc2ff';
+let waves = [];
+let currentWave = null;
+const palette = ['#6fc2ff', '#ff6f91', '#ffd700', '#7cffb2', '#ffb36f', '#b36fff', '#ff6fdc', '#6fffdc', '#ff7c6f', '#6fff7c', '#6f7cff', '#ff6f7c'];
+let colorIdx = 0;
 
-function drawWave(amplitude, wavelength, color) {
+function drawWave(amplitude, wavelength, color, yOffset=0) {
     ctx.save();
-    ctx.clearRect(0, 0, width, height);
-    ctx.strokeStyle = color || baseColor;
+    ctx.strokeStyle = color || palette[0];
     ctx.lineWidth = 3;
     ctx.beginPath();
     for (let x = 0; x <= width; x += 2) {
-        let y = height/2 + amplitude * Math.sin((x / wavelength) * 2 * Math.PI);
+        let y = height/2 + yOffset + amplitude * Math.sin((x / wavelength) * 2 * Math.PI);
         if (x === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
     }
-    ctx.shadowColor = color || baseColor;
+    ctx.shadowColor = color || palette[0];
     ctx.shadowBlur = 8;
     ctx.stroke();
     ctx.restore();
 }
 
 function animate() {
-    if (waveParams) {
-        drawWave(waveParams.amplitude, waveParams.wavelength, waveParams.color);
-    } else {
-        ctx.clearRect(0, 0, width, height);
-    }
+    ctx.clearRect(0, 0, width, height);
+    let stackOffset = -60 * (waves.length-1)/2;
+    waves.forEach((wave, i) => {
+        drawWave(wave.amplitude, wave.wavelength, wave.color, stackOffset + i*60);
+    });
     requestAnimationFrame(animate);
 }
 
 animate();
+
+// Render wave controls below canvas
+function renderWaveControls() {
+    let controlsDiv = document.getElementById('wave-controls');
+    if (!controlsDiv) {
+        controlsDiv = document.createElement('div');
+        controlsDiv.id = 'wave-controls';
+        controlsDiv.style.marginTop = '18px';
+        controlsDiv.style.display = 'flex';
+        controlsDiv.style.flexDirection = 'column';
+        controlsDiv.style.gap = '10px';
+        canvas.parentNode.insertBefore(controlsDiv, canvas.nextSibling);
+    }
+    controlsDiv.innerHTML = '';
+    waves.forEach((wave, i) => {
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.alignItems = 'center';
+        row.style.gap = '10px';
+        row.style.marginBottom = '2px';
+        // Color indicator
+        const colorDot = document.createElement('span');
+        colorDot.style.display = 'inline-block';
+        colorDot.style.width = '18px';
+        colorDot.style.height = '18px';
+        colorDot.style.borderRadius = '50%';
+        colorDot.style.background = wave.color;
+        row.appendChild(colorDot);
+        // Label
+        const label = document.createElement('span');
+        label.textContent = `Wave ${i+1}`;
+        label.style.color = wave.color;
+        label.style.fontWeight = 'bold';
+        row.appendChild(label);
+        // Note button
+        const noteBtn = document.createElement('button');
+        noteBtn.textContent = 'Note';
+        noteBtn.style.background = '#222';
+        noteBtn.style.color = wave.color;
+        noteBtn.style.border = '1px solid ' + wave.color;
+        noteBtn.style.borderRadius = '6px';
+        noteBtn.style.padding = '2px 10px';
+        noteBtn.onclick = () => playSingleNote(wave);
+        row.appendChild(noteBtn);
+        // Delete button
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'Delete';
+        delBtn.style.background = '#222';
+        delBtn.style.color = '#fff';
+        delBtn.style.border = '1px solid #888';
+        delBtn.style.borderRadius = '6px';
+        delBtn.style.padding = '2px 10px';
+        delBtn.onclick = () => deleteWave(i);
+        row.appendChild(delBtn);
+        controlsDiv.appendChild(row);
+    });
+}
+
+function playSingleNote(wave) {
+    const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctxAudio.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = 392;
+    const gain = ctxAudio.createGain();
+    gain.gain.value = 0.35;
+    osc.connect(gain).connect(ctxAudio.destination);
+    osc.start();
+    osc.stop(ctxAudio.currentTime + 0.35);
+    osc.onended = () => ctxAudio.close();
+}
+
+function deleteWave(idx) {
+    if (waves[idx]) {
+        stopRhythm(waves[idx]);
+        waves.splice(idx, 1);
+        renderWaveControls();
+    }
+}
+
+setInterval(renderWaveControls, 300);
 animate();
 
 
+
 canvas.addEventListener('mousedown', function(e) {
-    isDrawing = true;
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
     const my = e.clientY - rect.top;
     // Start with default amplitude and wavelength
-    waveParams = {
+    const color = palette[colorIdx % palette.length];
+    colorIdx++;
+    currentWave = {
         amplitude: 40,
         wavelength: 80,
-        color: baseColor
+        color,
+        isPlaying: true,
+        osc: null,
+        rhythmTimer: null
     };
-    startRhythm();
+    waves.push(currentWave);
+    startRhythm(currentWave);
 });
 
 canvas.addEventListener('mousemove', function(e) {
-    if (!isDrawing || !waveParams) return;
+    if (!currentWave || !currentWave.isPlaying) return;
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
     const my = e.clientY - rect.top;
-    // Wavelength based on horizontal drag distance, amplitude on vertical
     let dragX = Math.max(20, Math.abs(mx - width/2));
     let dragY = Math.max(20, Math.abs(my - height/2));
-    waveParams.wavelength = Math.max(20, Math.min(300, dragX));
-    waveParams.amplitude = Math.max(10, Math.min(80, dragY));
-    updateRhythm();
+    currentWave.wavelength = Math.max(20, Math.min(300, dragX));
+    currentWave.amplitude = Math.max(10, Math.min(80, dragY));
+    updateRhythm(currentWave);
 });
+
 
 canvas.addEventListener('mouseup', function(e) {
-    isDrawing = false;
-    stopRhythm();
-    waveParams = null;
+    if (!currentWave) return;
+    // Do not stop rhythm; let it continue playing
+    currentWave.isPlaying = true;
+    currentWave = null;
+    renderWaveControls();
 });
 
-function startRhythm() {
-    stopRhythm();
-    if (!waveParams) return;
-    // Map wavelength to rhythm interval (shorter = faster)
-    let interval = Math.max(60, Math.min(400, waveParams.wavelength * 1.5));
-    osc = new (window.AudioContext || window.webkitAudioContext)();
+function startRhythm(wave) {
+    stopRhythm(wave);
+    if (!wave) return;
+    let interval = Math.max(60, Math.min(400, wave.wavelength * 1.5));
+    wave.osc = new (window.AudioContext || window.webkitAudioContext)();
     let playTick = () => {
-        let o = osc.createOscillator();
+        if (!wave.isPlaying) return;
+        let o = wave.osc.createOscillator();
         o.type = 'sine';
-        o.frequency.value = 392; // G4
-        let g = osc.createGain();
+        o.frequency.value = 392;
+        let g = wave.osc.createGain();
         g.gain.value = 0.25;
-        o.connect(g).connect(osc.destination);
+        o.connect(g).connect(wave.osc.destination);
         o.start();
-        o.stop(osc.currentTime + 0.18);
-        rhythmTimer = setTimeout(playTick, interval);
+        o.stop(wave.osc.currentTime + 0.18);
+        wave.rhythmTimer = setTimeout(playTick, interval);
     };
     playTick();
 }
 
-function updateRhythm() {
-    if (!isDrawing || !waveParams) return;
-    stopRhythm();
-    startRhythm();
+function updateRhythm(wave) {
+    if (!wave || !wave.isPlaying) return;
+    stopRhythm(wave);
+    startRhythm(wave);
 }
 
-function stopRhythm() {
-    if (rhythmTimer) clearTimeout(rhythmTimer);
-    rhythmTimer = null;
-    if (osc) {
-        osc.close();
-        osc = null;
+function stopRhythm(wave) {
+    if (wave.rhythmTimer) clearTimeout(wave.rhythmTimer);
+    wave.rhythmTimer = null;
+    if (wave.osc) {
+        wave.osc.close();
+        wave.osc = null;
     }
 }
 
