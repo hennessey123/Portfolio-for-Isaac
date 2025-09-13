@@ -119,6 +119,7 @@ function drawCursor() {
     ctx.stroke();
     ctx.restore();
 }
+}
 // ...existing code...
 
 function yToPianoFreq(y) {
@@ -389,4 +390,4 @@ function playArpeggiation(line) {
     }
     playNext();
 }
-}
+
