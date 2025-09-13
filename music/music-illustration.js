@@ -6,13 +6,16 @@ const width = canvas.width;
 const height = canvas.height;
 
 // Musical notes
-const notes = [
-    {x: 80, y: 60, freq: 261.63, symbol: '\u2669'}, // C
-    {x: 180, y: 120, freq: 293.66, symbol: '\u266A'}, // D
-    {x: 300, y: 80, freq: 329.63, symbol: '\u266B'}, // E
-    {x: 420, y: 140, freq: 349.23, symbol: '\u266C'}, // F
-    {x: 520, y: 60, freq: 392.00, symbol: '\u266A'}  // G
-];
+const notes = [];
+const noteSymbols = ['\u2669','\u266A','\u266B','\u266C','\u266A','\u266B','\u266C','\u2669','\u266A','\u266B','\u266C','\u266A','\u266B','\u266C'];
+const noteFreqs = [261.63,293.66,329.63,349.23,392.00,440.00,493.88,523.25,587.33,659.25,698.46,783.99,880.00,987.77];
+for (let i = 0; i < noteSymbols.length; i++) {
+    let angle = Math.PI * 2 * (i / noteSymbols.length);
+    let radius = 60 + 40 * Math.sin(i * 1.2);
+    let x = 80 + 220 + Math.cos(angle) * radius + Math.random()*30;
+    let y = 90 + Math.sin(angle) * radius + Math.random()*30;
+    notes.push({x, y, freq: noteFreqs[i % noteFreqs.length], symbol: noteSymbols[i]});
+}
 
 // Animate wave
 let t = 0;

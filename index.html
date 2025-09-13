@@ -29,7 +29,7 @@
         <a href="bio.html">Bio</a>
         <a href="contact.html">Contact</a>
         <a href="resume.html">Resume</a>
-
+    <a href="music.html">Music</a>
     </nav>
     <header>
         <h1>Isaac Hennessey | Portfolio</h1>
@@ -37,6 +37,10 @@
     <main>
         <!-- Canvas for floating shapes, now only behind main sections -->
         <canvas id="floating-shapes"></canvas>
+        <!-- Music illustration canvas -->
+        <section style="width:100%;text-align:center;margin-top:24px;">
+            <canvas id="music-canvas" width="600" height="180" style="max-width:100%;border-radius:16px;box-shadow:0 2px 16px #222; background:#181818;"></canvas>
+        </section>
         <section>
                 <h2 style="text-align:center;">Technical Skills</h2>
                 <div class="skills-3d-container same-size-row">
@@ -71,5 +75,6 @@
     </footer>
     <!-- Scripts loaded at the end, after all DOM elements exist -->
     <script src="js/chemistry-structure.js"></script>
+    <script src="music/music-illustration.js"></script>
 </body>
 </html>

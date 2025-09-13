@@ -10,8 +10,8 @@ canvas.width = width;
 canvas.height = height;
 
 const ATOM_COUNT = 6;
-const ATOM_RADIUS = 14;
-const ELECTRON_RADIUS = 4;
+const ATOM_RADIUS = 9; // Slightly bigger than a character
+const ELECTRON_RADIUS = 2.5; // Just bigger than a single character
 const ELECTRON_ORBIT = 22;
 const ELECTRON_COUNT = 4;
 
@@ -19,8 +19,23 @@ const ELECTRON_COUNT = 4;
 let atoms = Array.from({length: ATOM_COUNT}, (_, i) => {
     let angle = Math.random() * 2 * Math.PI;
     let speed = 0.2 + Math.random() * 0.3;
-    let x = 40 + Math.random() * (width - 80);
-    let y = 20 + Math.random() * (height - 40);
+    // Spawn atoms only near the edges (left/right/top/bottom)
+    let edge = Math.floor(Math.random() * 4); // 0=left, 1=right, 2=top, 3=bottom
+    let margin = 20;
+    let x, y;
+    if (edge === 0) { // left
+        x = margin;
+        y = margin + Math.random() * (height - 2 * margin);
+    } else if (edge === 1) { // right
+        x = width - margin;
+        y = margin + Math.random() * (height - 2 * margin);
+    } else if (edge === 2) { // top
+        x = margin + Math.random() * (width - 2 * margin);
+        y = margin;
+    } else { // bottom
+        x = margin + Math.random() * (width - 2 * margin);
+        y = height - margin;
+    }
     let electronsPhase = Math.random() * 2 * Math.PI;
     return {x, y, angle, speed, electronsPhase};
 });
