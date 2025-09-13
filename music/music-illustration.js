@@ -105,6 +105,7 @@ function drawWave(amplitude, wavelength, color, yOffset=0, xOffset=0) {
     ctx.shadowBlur = 8;
     ctx.stroke();
     ctx.restore();
+}
 // ...existing code...
 
 function drawCursor() {
@@ -118,7 +119,6 @@ function drawCursor() {
     ctx.shadowBlur = 8;
     ctx.stroke();
     ctx.restore();
-}
 }
 // ...existing code...
 
