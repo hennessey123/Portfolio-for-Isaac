@@ -1,12 +1,12 @@
-const canvas = document.getElementById('draw-canvas');
+const canvas = document.getElementById('floating-shapes');
 const ctx = canvas.getContext('2d');
 let circles = [];
 let drawing = false;
 let startX = 0, startY = 0;
 
 function resizeCanvas() {
-    canvas.width = canvas.parentNode.offsetWidth;
-    canvas.height = 400;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 }
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();

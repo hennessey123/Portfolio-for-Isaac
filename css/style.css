@@ -35,8 +35,8 @@
     box-shadow: 0 2px 12px rgba(22,80,150,0.15), 0 1px 4px rgba(111,194,255,0.08);
 }
 :root {
-    --bg: #181a20;
-    --fg: #e9e9f4;
+    --bg: #121212;
+    --fg: #fff;
     --accent: #6fc2ff;
     --card-bg: #23263a;
     --card-hover: #33406e;
@@ -45,8 +45,8 @@
 
 body {
     margin: 0;
-    background: var(--bg);
-    color: var(--fg);
+    background: var(--bg) !important;
+    color: var(--fg) !important;
     font-family: 'Inter', 'Segoe UI', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;

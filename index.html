@@ -35,8 +35,8 @@
         <h1>Isaac Hennessey | Portfolio</h1>
     </header>
     <main>
-        <!-- Canvas for floating shapes, now only behind main sections -->
-        <canvas id="floating-shapes"></canvas>
+    <!-- Canvas for floating shapes, now covers the entire page -->
+    <canvas id="floating-shapes" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;"></canvas>
         <!-- Music illustration canvas -->
         <section style="width:100%;text-align:center;margin-top:24px;">
             <canvas id="music-canvas" width="600" height="180" style="max-width:100%;border-radius:16px;box-shadow:0 2px 16px #222; background:#181818;"></canvas>
@@ -75,5 +75,16 @@
     </footer>
     <!-- Scripts loaded at the end, after all DOM elements exist -->
     <script src="music/music-illustration.js"></script>
+</main>
+<script>
+// Make floating-shapes canvas cover the whole viewport
+const bgCanvas = document.getElementById('floating-shapes');
+function resizeBgCanvas() {
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeBgCanvas);
+resizeBgCanvas();
+</script>
 </body>
 </html>
