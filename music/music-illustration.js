@@ -118,6 +118,7 @@ function drawCursor() {
     ctx.shadowBlur = 8;
     ctx.stroke();
     ctx.restore();
+}
 // ...existing code...
 
 function yToPianoFreq(y) {
@@ -282,6 +283,7 @@ function deleteWave(idx) {
 
 setInterval(renderWaveControls, 300);
 animate();
+}
 
 
 
@@ -387,4 +389,4 @@ function playArpeggiation(line) {
     }
     playNext();
 }
-}}}
+}
