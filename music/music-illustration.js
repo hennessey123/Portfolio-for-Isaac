@@ -90,19 +90,6 @@ function audioBufferToWav(buffer) {
     return bufferArray;
 }
 
-// Interactive musical wave
-const canvas = document.getElementById('music-canvas');
-const ctx = canvas.getContext('2d');
-const width = canvas.width;
-const height = canvas.height;
-
-
-let waves = [];
-let currentWave = null;
-const palette = ['#6fc2ff', '#ff6f91', '#ffd700', '#7cffb2', '#ffb36f', '#b36fff', '#ff6fdc', '#6fffdc', '#ff7c6f', '#6fff7c', '#6f7cff', '#ff6f7c'];
-let colorIdx = 0;
-let cursorPos = null;
-
 
 function drawWave(amplitude, wavelength, color, yOffset=0, xOffset=0) {
     ctx.save();
@@ -118,7 +105,7 @@ function drawWave(amplitude, wavelength, color, yOffset=0, xOffset=0) {
     ctx.shadowBlur = 8;
     ctx.stroke();
     ctx.restore();
-}
+// ...existing code...
 
 function drawCursor() {
     if (!cursorPos) return;
@@ -131,7 +118,7 @@ function drawCursor() {
     ctx.shadowBlur = 8;
     ctx.stroke();
     ctx.restore();
-}
+// ...existing code...
 
 function yToPianoFreq(y) {
     // Piano key frequencies (C4 to C5, 13 notes including sharps)
@@ -153,6 +140,7 @@ function yToPianoFreq(y) {
     const idx = Math.max(0, Math.min(pianoKeys.length-1, Math.floor((height-y)/height * pianoKeys.length)));
     return pianoKeys[idx].freq;
 }
+// ...existing code...
 
 function animate() {
     ctx.clearRect(0, 0, width, height);
@@ -207,7 +195,7 @@ function renderWaveControls() {
         label.style.color = wave.color;
         label.style.fontWeight = 'bold';
         row.appendChild(label);
-        // Note dropdown
+        // Show current note name
         const pianoKeys = [
             {name: 'C4', freq: 261.63},
             {name: 'C#4', freq: 277.18},
@@ -223,27 +211,12 @@ function renderWaveControls() {
             {name: 'B4', freq: 493.88},
             {name: 'C5', freq: 523.25}
         ];
-        const noteSelect = document.createElement('select');
-        noteSelect.style.background = '#222';
-        noteSelect.style.color = wave.color;
-        noteSelect.style.border = '1px solid ' + wave.color;
-        noteSelect.style.borderRadius = '6px';
-        noteSelect.style.padding = '2px 10px';
-        pianoKeys.forEach((key) => {
-            const opt = document.createElement('option');
-            opt.value = key.freq;
-            opt.textContent = key.name;
-            if (wave.fixedNote === key.freq) opt.selected = true;
-        
-            // If not fixed, select the current freq
-            if (!wave.fixedNote && Math.abs(wave.freq - key.freq) < 1) opt.selected = true;
-            noteSelect.appendChild(opt);
-        });
-        noteSelect.onchange = () => {
-            wave.fixedNote = parseFloat(noteSelect.value);
-            wave.freq = wave.fixedNote;
-        };
-        row.appendChild(noteSelect);
+        let noteName = pianoKeys.reduce((best, key) => Math.abs(key.freq - wave.freq) < Math.abs(best.freq - wave.freq) ? key : best, pianoKeys[0]).name;
+        const noteLabel = document.createElement('span');
+        noteLabel.textContent = `Note: ${noteName}`;
+        noteLabel.style.color = wave.color;
+        noteLabel.style.fontWeight = 'bold';
+        row.appendChild(noteLabel);
         // Play button
         const playBtn = document.createElement('button');
         playBtn.textContent = 'Play';
@@ -287,7 +260,6 @@ function deleteWave(idx) {
         waves.splice(idx, 1);
         renderWaveControls();
     }
-}
 
 setInterval(renderWaveControls, 300);
 animate();
@@ -396,3 +368,4 @@ function playArpeggiation(line) {
     }
     playNext();
 }
+}}}
