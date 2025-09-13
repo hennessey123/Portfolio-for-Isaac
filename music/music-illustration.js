@@ -90,110 +90,115 @@ function audioBufferToWav(buffer) {
     return bufferArray;
 }
 
-// Interactive musical lines/arpeggiations
+// Interactive musical wave
 const canvas = document.getElementById('music-canvas');
 const ctx = canvas.getContext('2d');
 const width = canvas.width;
 const height = canvas.height;
 
-const noteSymbols = ['\u2669','\u266A','\u266B','\u266C','\u266A','\u266B','\u266C','\u2669','\u266A','\u266B','\u266C','\u266A','\u266B','\u266C'];
-const noteFreqs = [261.63,293.66,329.63,349.23,392.00,440.00,493.88,523.25,587.33,659.25,698.46,783.99,880.00,987.77];
+let isDrawing = false;
+let waveParams = null; // { amplitude, wavelength, color }
+let osc = null;
+let rhythmTimer = null;
+const baseColor = '#6fc2ff';
 
-
-let lines = [];
-let currentLine = null;
-const palette = [
-    '#6fc2ff', '#ff6f91', '#ffd700', '#7cffb2', '#ffb36f', '#b36fff', '#ff6fdc', '#6fffdc', '#ff7c6f', '#6fff7c', '#6f7cff', '#ff6f7c'
-];
-let colorIdx = 0;
-
-function yToNote(y) {
-    // Map y to note index (top = high, bottom = low)
-    const idx = Math.max(0, Math.min(noteFreqs.length-1, Math.floor((height-y)/height * noteFreqs.length)));
-    return {freq: noteFreqs[idx], symbol: noteSymbols[idx]};
-}
-
-// Optionally, snap to nearest note for clarity
-function snapToNote(y) {
-    const step = height / noteFreqs.length;
-    const idx = Math.max(0, Math.min(noteFreqs.length-1, Math.floor((height-y)/step)));
-    const snappedY = height - idx * step - step/2;
-    return {freq: noteFreqs[idx], symbol: noteSymbols[idx], y: snappedY};
-}
-
-
-function drawLines() {
-    for (let line of lines) {
-        if (line.length < 2) continue;
-        const color = line.color || '#6fc2ff';
-        ctx.save();
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(line[0].x, line[0].y);
-        for (let i = 1; i < line.length; i++) {
-            ctx.lineTo(line[i].x, line[i].y);
-        }
-        ctx.stroke();
-        ctx.restore();
-        // Draw notes
-        for (let pt of line) {
-            ctx.save();
-            ctx.font = '28px serif';
-            ctx.globalAlpha = 0.95;
-            ctx.fillStyle = color;
-            ctx.shadowColor = color;
-            ctx.shadowBlur = 10;
-            ctx.fillText(pt.symbol, pt.x-12, pt.y+10);
-            ctx.restore();
-        }
+function drawWave(amplitude, wavelength, color) {
+    ctx.save();
+    ctx.clearRect(0, 0, width, height);
+    ctx.strokeStyle = color || baseColor;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    for (let x = 0; x <= width; x += 2) {
+        let y = height/2 + amplitude * Math.sin((x / wavelength) * 2 * Math.PI);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
     }
+    ctx.shadowColor = color || baseColor;
+    ctx.shadowBlur = 8;
+    ctx.stroke();
+    ctx.restore();
 }
 
 function animate() {
-    ctx.clearRect(0, 0, width, height);
-    drawLines();
+    if (waveParams) {
+        drawWave(waveParams.amplitude, waveParams.wavelength, waveParams.color);
+    } else {
+        ctx.clearRect(0, 0, width, height);
+    }
     requestAnimationFrame(animate);
 }
 
 animate();
-
-// Mouse interaction for drawing note lines
+animate();
 
 
 canvas.addEventListener('mousedown', function(e) {
+    isDrawing = true;
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
     const my = e.clientY - rect.top;
-    const note = snapToNote(my);
-    const color = palette[colorIdx % palette.length];
-    colorIdx++;
-    currentLine = [{x: mx, y: note.y, freq: note.freq, symbol: note.symbol}];
-    currentLine.color = color;
-    lines.push(currentLine);
-    canvas.isDrawing = true;
+    // Start with default amplitude and wavelength
+    waveParams = {
+        amplitude: 40,
+        wavelength: 80,
+        color: baseColor
+    };
+    startRhythm();
 });
 
 canvas.addEventListener('mousemove', function(e) {
-    if (!canvas.isDrawing || !currentLine) return;
+    if (!isDrawing || !waveParams) return;
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
     const my = e.clientY - rect.top;
-    const note = snapToNote(my);
-    const last = currentLine[currentLine.length-1];
-    if (Math.abs(mx-last.x) > 8 || Math.abs(note.y-last.y) > 8) {
-        currentLine.push({x: mx, y: note.y, freq: note.freq, symbol: note.symbol});
-    }
+    // Wavelength based on horizontal drag distance, amplitude on vertical
+    let dragX = Math.max(20, Math.abs(mx - width/2));
+    let dragY = Math.max(20, Math.abs(my - height/2));
+    waveParams.wavelength = Math.max(20, Math.min(300, dragX));
+    waveParams.amplitude = Math.max(10, Math.min(80, dragY));
+    updateRhythm();
 });
-
 
 canvas.addEventListener('mouseup', function(e) {
-    canvas.isDrawing = false;
-    if (currentLine && currentLine.length > 0) {
-        playArpeggiation(currentLine);
-    }
-    currentLine = null;
+    isDrawing = false;
+    stopRhythm();
+    waveParams = null;
 });
+
+function startRhythm() {
+    stopRhythm();
+    if (!waveParams) return;
+    // Map wavelength to rhythm interval (shorter = faster)
+    let interval = Math.max(60, Math.min(400, waveParams.wavelength * 1.5));
+    osc = new (window.AudioContext || window.webkitAudioContext)();
+    let playTick = () => {
+        let o = osc.createOscillator();
+        o.type = 'sine';
+        o.frequency.value = 392; // G4
+        let g = osc.createGain();
+        g.gain.value = 0.25;
+        o.connect(g).connect(osc.destination);
+        o.start();
+        o.stop(osc.currentTime + 0.18);
+        rhythmTimer = setTimeout(playTick, interval);
+    };
+    playTick();
+}
+
+function updateRhythm() {
+    if (!isDrawing || !waveParams) return;
+    stopRhythm();
+    startRhythm();
+}
+
+function stopRhythm() {
+    if (rhythmTimer) clearTimeout(rhythmTimer);
+    rhythmTimer = null;
+    if (osc) {
+        osc.close();
+        osc = null;
+    }
+}
 
 
 function playArpeggiation(line) {
