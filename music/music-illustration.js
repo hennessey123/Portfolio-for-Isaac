@@ -217,6 +217,25 @@ function renderWaveControls() {
         noteLabel.style.color = wave.color;
         noteLabel.style.fontWeight = 'bold';
         row.appendChild(noteLabel);
+        // Instrument dropdown
+        const instrumentSelect = document.createElement('select');
+        instrumentSelect.style.background = '#222';
+        instrumentSelect.style.color = wave.color;
+        instrumentSelect.style.border = '1px solid ' + wave.color;
+        instrumentSelect.style.borderRadius = '6px';
+        instrumentSelect.style.padding = '2px 10px';
+        ['Sine (Piano)', 'Violin'].forEach((name, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx === 0 ? 'sine' : 'triangle';
+            opt.textContent = name;
+            if (!wave.instrument && idx === 0) opt.selected = true;
+            if (wave.instrument === opt.value) opt.selected = true;
+            instrumentSelect.appendChild(opt);
+        });
+        instrumentSelect.onchange = () => {
+            wave.instrument = instrumentSelect.value;
+        };
+        row.appendChild(instrumentSelect);
         // Play button
         const playBtn = document.createElement('button');
         playBtn.textContent = 'Play';
@@ -244,7 +263,7 @@ function renderWaveControls() {
 function playSingleNote(wave) {
     const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctxAudio.createOscillator();
-    osc.type = 'sine';
+    osc.type = wave.instrument || 'sine';
     osc.frequency.value = 392;
     const gain = ctxAudio.createGain();
     gain.gain.value = 0.35;
@@ -320,7 +339,7 @@ function startRhythm(wave) {
     let playTick = () => {
         if (!wave.isPlaying) return;
         let o = wave.osc.createOscillator();
-        o.type = 'sine';
+    o.type = wave.instrument || 'sine';
         o.frequency.value = 392;
         let g = wave.osc.createGain();
         g.gain.value = 0.25;
