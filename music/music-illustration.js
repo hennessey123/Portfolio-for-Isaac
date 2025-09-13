@@ -1,3 +1,15 @@
+// --- Global Variables ---
+const canvas = document.getElementById('music-canvas');
+const ctx = canvas.getContext('2d');
+const width = canvas.width;
+const height = canvas.height;
+const palette = ['#6fc2ff', '#ff6f91', '#39ff14', '#ffd700', '#ffb347', '#b39ddb'];
+let colorIdx = 0;
+let waves = [];
+let lines = [];
+let cursorPos = null;
+let currentWave = null;
+
 // Download last arpeggiation as WAV on Return key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && lines.length > 0) {
@@ -152,10 +164,8 @@ function animate() {
         if (!wave.xOffset) wave.xOffset = 0;
         if (!wave.isDrawing) wave.xOffset += 0.8 * (i%2===0 ? 1 : -1); // move left/right
         // If note is not fixed, update freq based on current vertical position
-        if (!wave.fixedNote) {
-            let y = height/2 + stackOffset + i*60;
-            wave.freq = yToPianoFreq(y);
-        }
+        let y = height/2 + stackOffset + i*60;
+        wave.freq = yToPianoFreq(y);
         drawWave(wave.amplitude, wave.wavelength, wave.color, stackOffset + i*60, wave.xOffset);
     });
     drawCursor();
@@ -266,7 +276,7 @@ function playSingleNote(wave) {
     const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctxAudio.createOscillator();
     osc.type = wave.instrument || 'sine';
-    osc.frequency.value = 392;
+    osc.frequency.value = wave.freq || 392;
     const gain = ctxAudio.createGain();
     gain.gain.value = 0.35;
     osc.connect(gain).connect(ctxAudio.destination);
@@ -281,9 +291,6 @@ function deleteWave(idx) {
         waves.splice(idx, 1);
         renderWaveControls();
     }
-
-setInterval(renderWaveControls, 300);
-animate();
 }
 
 
@@ -303,10 +310,13 @@ canvas.addEventListener('mousedown', function(e) {
         color,
         isPlaying: true,
         osc: null,
-        rhythmTimer: null
+        rhythmTimer: null,
+        instrument: 'sine',
+        freq: yToPianoFreq(my)
     };
     waves.push(currentWave);
     startRhythm(currentWave);
+    renderWaveControls();
 });
 
 
@@ -320,7 +330,9 @@ canvas.addEventListener('mousemove', function(e) {
     let dragY = Math.max(20, Math.abs(my - height/2));
     currentWave.wavelength = Math.max(20, Math.min(300, dragX));
     currentWave.amplitude = Math.max(10, Math.min(80, dragY));
+    currentWave.freq = yToPianoFreq(my);
     updateRhythm(currentWave);
+    renderWaveControls();
 });
 
 
@@ -342,8 +354,8 @@ function startRhythm(wave) {
     let playTick = () => {
         if (!wave.isPlaying) return;
         let o = wave.osc.createOscillator();
-    o.type = wave.instrument || 'sine';
-        o.frequency.value = 392;
+        o.type = wave.instrument || 'sine';
+        o.frequency.value = wave.freq || 392;
         let g = wave.osc.createGain();
         g.gain.value = 0.25;
         o.connect(g).connect(wave.osc.destination);
@@ -378,13 +390,20 @@ function playArpeggiation(line) {
         totalDist += Math.abs(line[i].x - line[i-1].x);
     }
     let avgDist = line.length > 1 ? totalDist / (line.length-1) : 40;
-    // Map avgDist to interval: smaller = faster, larger = slower
-    // Clamp interval between 60ms (fast) and 400ms (slow)
     let interval = Math.max(60, Math.min(400, 800 - avgDist*2));
     let idx = 0;
     function playNext() {
         if (idx >= line.length) return;
-        playNote(line[idx].freq);
+        const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctxAudio.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = line[idx].freq;
+        const gain = ctxAudio.createGain();
+        gain.gain.value = 0.35;
+        osc.connect(gain).connect(ctxAudio.destination);
+        osc.start();
+        osc.stop(ctxAudio.currentTime + 0.35);
+        osc.onended = () => ctxAudio.close();
         idx++;
         setTimeout(playNext, interval);
     }
