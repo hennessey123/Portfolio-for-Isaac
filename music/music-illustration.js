@@ -96,10 +96,13 @@ const ctx = canvas.getContext('2d');
 const width = canvas.width;
 const height = canvas.height;
 
+
 let waves = [];
 let currentWave = null;
 const palette = ['#6fc2ff', '#ff6f91', '#ffd700', '#7cffb2', '#ffb36f', '#b36fff', '#ff6fdc', '#6fffdc', '#ff7c6f', '#6fff7c', '#6f7cff', '#ff6f7c'];
 let colorIdx = 0;
+let cursorPos = null;
+
 
 function drawWave(amplitude, wavelength, color, yOffset=0) {
     ctx.save();
@@ -117,12 +120,26 @@ function drawWave(amplitude, wavelength, color, yOffset=0) {
     ctx.restore();
 }
 
+function drawCursor() {
+    if (!cursorPos) return;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cursorPos.x, cursorPos.y, 10, 0, 2 * Math.PI);
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = '#fff';
+    ctx.shadowBlur = 8;
+    ctx.stroke();
+    ctx.restore();
+}
+
 function animate() {
     ctx.clearRect(0, 0, width, height);
     let stackOffset = -60 * (waves.length-1)/2;
     waves.forEach((wave, i) => {
         drawWave(wave.amplitude, wave.wavelength, wave.color, stackOffset + i*60);
     });
+    drawCursor();
     requestAnimationFrame(animate);
 }
 
@@ -211,10 +228,12 @@ animate();
 
 
 
+
 canvas.addEventListener('mousedown', function(e) {
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
     const my = e.clientY - rect.top;
+    cursorPos = {x: mx, y: my};
     // Start with default amplitude and wavelength
     const color = palette[colorIdx % palette.length];
     colorIdx++;
@@ -230,11 +249,13 @@ canvas.addEventListener('mousedown', function(e) {
     startRhythm(currentWave);
 });
 
+
 canvas.addEventListener('mousemove', function(e) {
-    if (!currentWave || !currentWave.isPlaying) return;
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
     const my = e.clientY - rect.top;
+    cursorPos = {x: mx, y: my};
+    if (!currentWave || !currentWave.isPlaying) return;
     let dragX = Math.max(20, Math.abs(mx - width/2));
     let dragY = Math.max(20, Math.abs(my - height/2));
     currentWave.wavelength = Math.max(20, Math.min(300, dragX));
@@ -243,7 +264,9 @@ canvas.addEventListener('mousemove', function(e) {
 });
 
 
+
 canvas.addEventListener('mouseup', function(e) {
+    cursorPos = null;
     if (!currentWave) return;
     // Do not stop rhythm; let it continue playing
     currentWave.isPlaying = true;

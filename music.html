@@ -24,7 +24,31 @@
         h1, h2, p, nav a {
             color: #fff !important;
         }
+        /* Custom glowing cursor */
+        .custom-cursor {
+            position: fixed;
+            pointer-events: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 12px #fff, 0 0 24px #6fc2ff;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: background 0.2s;
+        }
     </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cursor = document.createElement('div');
+        cursor.className = 'custom-cursor';
+        document.body.appendChild(cursor);
+        document.addEventListener('mousemove', function(e) {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+    });
+    </script>
 </head>
 <body style="background: #121212;">
     <nav class="navbar">
