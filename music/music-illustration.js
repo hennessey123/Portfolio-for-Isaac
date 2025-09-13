@@ -104,13 +104,13 @@ let colorIdx = 0;
 let cursorPos = null;
 
 
-function drawWave(amplitude, wavelength, color, yOffset=0) {
+function drawWave(amplitude, wavelength, color, yOffset=0, xOffset=0) {
     ctx.save();
     ctx.strokeStyle = color || palette[0];
     ctx.lineWidth = 3;
     ctx.beginPath();
     for (let x = 0; x <= width; x += 2) {
-        let y = height/2 + yOffset + amplitude * Math.sin((x / wavelength) * 2 * Math.PI);
+        let y = height/2 + yOffset + amplitude * Math.sin(((x + xOffset) / wavelength) * 2 * Math.PI);
         if (x === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
     }
@@ -133,11 +133,40 @@ function drawCursor() {
     ctx.restore();
 }
 
+function yToPianoFreq(y) {
+    // Piano key frequencies (C4 to C5, 13 notes including sharps)
+    const pianoKeys = [
+        {name: 'C4', freq: 261.63},
+        {name: 'C#4', freq: 277.18},
+        {name: 'D4', freq: 293.66},
+        {name: 'D#4', freq: 311.13},
+        {name: 'E4', freq: 329.63},
+        {name: 'F4', freq: 349.23},
+        {name: 'F#4', freq: 369.99},
+        {name: 'G4', freq: 392.00},
+        {name: 'G#4', freq: 415.30},
+        {name: 'A4', freq: 440.00},
+        {name: 'A#4', freq: 466.16},
+        {name: 'B4', freq: 493.88},
+        {name: 'C5', freq: 523.25}
+    ];
+    const idx = Math.max(0, Math.min(pianoKeys.length-1, Math.floor((height-y)/height * pianoKeys.length)));
+    return pianoKeys[idx].freq;
+}
+
 function animate() {
     ctx.clearRect(0, 0, width, height);
     let stackOffset = -60 * (waves.length-1)/2;
     waves.forEach((wave, i) => {
-        drawWave(wave.amplitude, wave.wavelength, wave.color, stackOffset + i*60);
+        // Animate horizontal offset after release
+        if (!wave.xOffset) wave.xOffset = 0;
+        if (!wave.isDrawing) wave.xOffset += 0.8 * (i%2===0 ? 1 : -1); // move left/right
+        // If note is not fixed, update freq based on current vertical position
+        if (!wave.fixedNote) {
+            let y = height/2 + stackOffset + i*60;
+            wave.freq = yToPianoFreq(y);
+        }
+        drawWave(wave.amplitude, wave.wavelength, wave.color, stackOffset + i*60, wave.xOffset);
     });
     drawCursor();
     requestAnimationFrame(animate);
@@ -178,16 +207,53 @@ function renderWaveControls() {
         label.style.color = wave.color;
         label.style.fontWeight = 'bold';
         row.appendChild(label);
-        // Note button
-        const noteBtn = document.createElement('button');
-        noteBtn.textContent = 'Note';
-        noteBtn.style.background = '#222';
-        noteBtn.style.color = wave.color;
-        noteBtn.style.border = '1px solid ' + wave.color;
-        noteBtn.style.borderRadius = '6px';
-        noteBtn.style.padding = '2px 10px';
-        noteBtn.onclick = () => playSingleNote(wave);
-        row.appendChild(noteBtn);
+        // Note dropdown
+        const pianoKeys = [
+            {name: 'C4', freq: 261.63},
+            {name: 'C#4', freq: 277.18},
+            {name: 'D4', freq: 293.66},
+            {name: 'D#4', freq: 311.13},
+            {name: 'E4', freq: 329.63},
+            {name: 'F4', freq: 349.23},
+            {name: 'F#4', freq: 369.99},
+            {name: 'G4', freq: 392.00},
+            {name: 'G#4', freq: 415.30},
+            {name: 'A4', freq: 440.00},
+            {name: 'A#4', freq: 466.16},
+            {name: 'B4', freq: 493.88},
+            {name: 'C5', freq: 523.25}
+        ];
+        const noteSelect = document.createElement('select');
+        noteSelect.style.background = '#222';
+        noteSelect.style.color = wave.color;
+        noteSelect.style.border = '1px solid ' + wave.color;
+        noteSelect.style.borderRadius = '6px';
+        noteSelect.style.padding = '2px 10px';
+        pianoKeys.forEach((key) => {
+            const opt = document.createElement('option');
+            opt.value = key.freq;
+            opt.textContent = key.name;
+            if (wave.fixedNote === key.freq) opt.selected = true;
+        
+            // If not fixed, select the current freq
+            if (!wave.fixedNote && Math.abs(wave.freq - key.freq) < 1) opt.selected = true;
+            noteSelect.appendChild(opt);
+        });
+        noteSelect.onchange = () => {
+            wave.fixedNote = parseFloat(noteSelect.value);
+            wave.freq = wave.fixedNote;
+        };
+        row.appendChild(noteSelect);
+        // Play button
+        const playBtn = document.createElement('button');
+        playBtn.textContent = 'Play';
+        playBtn.style.background = '#222';
+        playBtn.style.color = wave.color;
+        playBtn.style.border = '1px solid ' + wave.color;
+        playBtn.style.borderRadius = '6px';
+        playBtn.style.padding = '2px 10px';
+        playBtn.onclick = () => playSingleNote(wave);
+        row.appendChild(playBtn);
         // Delete button
         const delBtn = document.createElement('button');
         delBtn.textContent = 'Delete';
