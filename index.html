@@ -131,8 +131,11 @@
             }
         }
         document.addEventListener('DOMContentLoaded', function() {
-            // Set initial mode from system preference
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            // Set initial mode from localStorage or system preference
+            let savedMode = localStorage.getItem('theme-mode');
+            if (savedMode === 'light' || savedMode === 'dark') {
+                setMode(savedMode);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
                 setMode('light');
             } else {
                 setMode('dark');
@@ -140,6 +143,7 @@
             document.getElementById('mode-toggle').onclick = function() {
                 const newMode = getMode() === 'dark' ? 'light' : 'dark';
                 setMode(newMode);
+                localStorage.setItem('theme-mode', newMode);
                 confetti();
             };
         });

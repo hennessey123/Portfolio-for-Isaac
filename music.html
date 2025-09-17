@@ -88,7 +88,10 @@
         }
     }
     document.addEventListener('DOMContentLoaded', function() {
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        let savedMode = localStorage.getItem('theme-mode');
+        if (savedMode === 'light' || savedMode === 'dark') {
+            setMode(savedMode);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
             setMode('light');
         } else {
             setMode('dark');
@@ -96,6 +99,7 @@
         document.getElementById('mode-toggle').onclick = function() {
             const newMode = getMode() === 'dark' ? 'light' : 'dark';
             setMode(newMode);
+            localStorage.setItem('theme-mode', newMode);
             confetti();
         };
     });
