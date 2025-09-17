@@ -182,10 +182,7 @@ footer {
     margin-top: 3em;
 }
 
-/* Custom cursor styles (hidden default cursor) */
-body, canvas {
-    cursor: none;
-}
+/* Custom cursor styles (removed cursor: none to keep cursor visible) */
 
 /* Responsive */
 @media (max-width: 700px) {

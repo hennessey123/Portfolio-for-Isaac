@@ -13,7 +13,8 @@
         <a href="bio.html">Bio</a>
         <a href="contact.html">Contact</a>
         <a href="resume.html">Resume</a>
-            <a href="music.html">Music</a>
+        <a href="music.html">Music</a>
+        <button id="mode-toggle" style="margin-left:auto;padding:0.5em 1em;border-radius:6px;border:none;background:var(--accent);color:#181a20;font-weight:bold;cursor:pointer;">Toggle Mode</button>
     </nav>
     <header>
         <h1>Projects</h1>
@@ -21,24 +22,110 @@
     <main style="padding:0; margin:0;">
             
             <div class="project-links" style="gap:1.2em; margin:0; justify-content:center;">
-                <div class="hover-box floating" onclick="window.open('https://github.com/hennessey123/pythonprojects','_blank')">
+                <div class="hover-box floating project-card-fixed" onclick="window.open('https://github.com/hennessey123/pythonprojects','_blank')">
                     <h3>Custom Calendar</h3>
                     <p>A calendar built using python.</p>
                 </div>
-                <div class="hover-box floating" onclick="window.open('https://github.com/hennessey123/bombardillocrocadillo','_blank')">
+                <div class="hover-box floating project-card-fixed" onclick="window.open('https://github.com/hennessey123/bombardillocrocadillo','_blank')">
                     <h3>Bomber Game</h3>
                     <p>Simple bomber game where a crocadile plane shoots bombs at sharks with nikes. Uses Java, OOP, graphics, and game logic.</p>
                 </div>
-                <div class="hover-box floating" onclick="window.open('https://github.com/hennessey123/javaprojects/blob/main/isaac_northrop_hennessey_assignment5.java','_blank')">
+                <div class="hover-box floating project-card-fixed" onclick="window.open('https://github.com/hennessey123/javaprojects/blob/main/isaac_northrop_hennessey_assignment5.java','_blank')">
                     <h3>Towers of Honoi</h3>
                     <p>Towers of Honoi follows an algorith which was captured using Java and recursive function to demonstrate the use of sub programs.</p>
                 </div>
             </div>
+    <style>
+    .project-card-fixed {
+        min-width: 260px;
+        max-width: 260px;
+        min-height: 210px;
+        max-height: 210px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        box-sizing: border-box;
+    }
+    @media (max-width: 900px) {
+        .project-card-fixed {
+            min-width: 180px;
+            max-width: 100%;
+            min-height: 180px;
+            max-height: none;
+        }
+    }
+    </style>
         </section>
     </main>
     <footer>
         <p>&copy; 2025 Isaac Hennessey</p>
     </footer>
     <script src="js_interactive_Version12.js"></script>
+    <script>
+    // Dark/Light mode toggle and confetti
+    const root = document.documentElement;
+    function setMode(mode) {
+        if (mode === 'light') {
+            root.style.setProperty('--bg', '#f7f7fa');
+            root.style.setProperty('--fg', '#181a20');
+            root.style.setProperty('--card-bg', '#fff');
+            root.style.setProperty('--card-hover', '#e0e7ff');
+            root.style.setProperty('--accent', '#6fc2ff');
+            root.style.setProperty('--shadow', '0 2px 16px rgba(22,80,150,0.10)');
+            document.body.classList.add('light-mode');
+            document.body.classList.remove('dark-mode');
+        } else {
+            root.style.setProperty('--bg', '#121212');
+            root.style.setProperty('--fg', '#fff');
+            root.style.setProperty('--card-bg', '#23263a');
+            root.style.setProperty('--card-hover', '#33406e');
+            root.style.setProperty('--accent', '#6fc2ff');
+            root.style.setProperty('--shadow', '0 2px 16px rgba(22,80,150,0.20)');
+            document.body.classList.add('dark-mode');
+            document.body.classList.remove('light-mode');
+        }
+    }
+    function getMode() {
+        return document.body.classList.contains('light-mode') ? 'light' : 'dark';
+    }
+    function confetti() {
+        const colors = ['#6fc2ff','#ffd700','#ff6f91','#39ff14','#b39ddb','#ffb347'];
+        for (let i=0; i<80; i++) {
+            let conf = document.createElement('div');
+            conf.style.position = 'fixed';
+            conf.style.left = Math.random()*100 + 'vw';
+            conf.style.top = '-2vh';
+            conf.style.width = '10px';
+            conf.style.height = '10px';
+            conf.style.background = colors[Math.floor(Math.random()*colors.length)];
+            conf.style.opacity = 0.8;
+            conf.style.borderRadius = '50%';
+            conf.style.zIndex = 9999;
+            conf.style.pointerEvents = 'none';
+            conf.style.transition = 'top 1.6s cubic-bezier(.4,1.4,.6,1), opacity 0.8s';
+            document.body.appendChild(conf);
+            setTimeout(()=>{
+                conf.style.top = (80+Math.random()*20)+'vh';
+                conf.style.opacity = 0;
+            }, 10);
+            setTimeout(()=>{
+                conf.remove();
+            }, 1800);
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            setMode('light');
+        } else {
+            setMode('dark');
+        }
+        document.getElementById('mode-toggle').onclick = function() {
+            const newMode = getMode() === 'dark' ? 'light' : 'dark';
+            setMode(newMode);
+            confetti();
+        };
+    });
+    </script>
 </body>
 </html>
