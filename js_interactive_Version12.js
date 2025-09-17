@@ -4,6 +4,9 @@ let circles = [];
 let drawing = false;
 let startX = 0, startY = 0;
 
+// Blue cursor ball state
+let cursorX = null, cursorY = null;
+
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -31,6 +34,19 @@ function drawCircles() {
         if(c.x < c.radius || c.x > canvas.width-c.radius) c.vx *= -1;
         if(c.y < c.radius || c.y > canvas.height-c.radius) c.vy *= -1;
     });
+    // Draw blue cursor ball if mouse is on page
+    if (cursorX !== null && cursorY !== null) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cursorX, cursorY, 11, 0, 2 * Math.PI);
+        ctx.strokeStyle = '#44baff';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#44baff';
+        ctx.shadowBlur = 16;
+        ctx.globalAlpha = 0.95;
+        ctx.stroke();
+        ctx.restore();
+    }
     requestAnimationFrame(drawCircles);
 }
 drawCircles();
@@ -62,8 +78,13 @@ canvas.addEventListener('mouseup', e => {
     drawing = false;
 });
 
-// Custom cursor effect
-document.body.addEventListener('mousemove', e => {
-    canvas.style.boxShadow = `0 0 24px 2px #44baff`;
-    canvas.style.borderColor = '#44baff';
+// Track mouse for blue cursor ball
+document.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    cursorX = e.clientX - rect.left;
+    cursorY = e.clientY - rect.top;
+});
+document.addEventListener('mouseleave', e => {
+    cursorX = null;
+    cursorY = null;
 });
