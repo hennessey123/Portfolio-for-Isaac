@@ -5,21 +5,6 @@
     <title>Isaac Hennessey | Projects</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        main {
-            position: relative;
-            z-index: 1;
-        }
-        #floating-shapes {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -28,7 +13,7 @@
         <a href="bio.html">Bio</a>
         <a href="contact.html">Contact</a>
         <a href="resume.html">Resume</a>
-    <a href="music.html">Music</a>
+            <a href="music.html">Music</a>
     </nav>
     <header>
         <h1>Projects</h1>
@@ -37,13 +22,28 @@
         <canvas id="floating-shapes"></canvas>
         <section class="project-list">
             <h2>Featured Projects</h2>
-            <ul>
-                <li><a href="https://github.com/hennessey123/335project" target="_blank">335 Project</a></li>
-                <li><a href="https://github.com/hennessey123/bombardillocrocadillo" target="_blank">Bomber Game</a></li>
-                <li><a href="https://github.com/hennessey123/hennessey123.github.io" target="_blank">Personal Website Repo</a></li>
-                <li><a href="https://github.com/praiseisaac/senior-seminar-demo" target="_blank">Senior Seminar Demo</a></li>
-                <li><a href="https://github.com/afraiddocument/Mobilized-Food-Trucks-Project" target="_blank">Food Trucks Project</a></li>
-            </ul>
+            <div class="project-links">
+                <div class="hover-box floating" onclick="window.open('https://github.com/hennessey123/335project','_blank')">
+                    <h3>335 Project</h3>
+                    <p>Course project for CSCI 335. Data structures and algorithms in C++.</p>
+                </div>
+                <div class="hover-box floating" onclick="window.open('https://github.com/hennessey123/bombardillocrocadillo','_blank')">
+                    <h3>Bomber Game</h3>
+                    <p>Arcade-style bomberman clone. Java, OOP, graphics, and game logic.</p>
+                </div>
+                <div class="hover-box floating" onclick="window.open('https://github.com/hennessey123/hennessey123.github.io','_blank')">
+                    <h3>Personal Website Repo</h3>
+                    <p>This portfolio website. HTML, CSS, JS, and web design.</p>
+                </div>
+                <div class="hover-box floating" onclick="window.open('https://github.com/praiseisaac/senior-seminar-demo','_blank')">
+                    <h3>Senior Seminar Demo</h3>
+                    <p>Demo project for senior seminar. Python, Flask, and deployment.</p>
+                </div>
+                <div class="hover-box floating" onclick="window.open('https://github.com/afraiddocument/Mobilized-Food-Trucks-Project','_blank')">
+                    <h3>Food Trucks Project</h3>
+                    <p>Collaborative project for food truck tracking. React, Node.js, PostgreSQL.</p>
+                </div>
+            </div>
         </section>
     </main>
     <footer>
