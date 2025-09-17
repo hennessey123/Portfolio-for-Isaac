@@ -36,8 +36,7 @@
     </header>
     <main>
     <!-- Canvas for floating shapes, now covers the entire page -->
-    <canvas id="floating-shapes" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;"></canvas>
-        <!-- Music illustration canvas -->
+<canvas id="floating-shapes"></canvas>       
         <section style="width:100%;text-align:center;margin-top:24px;">
             <canvas id="music-canvas" width="600" height="180" style="max-width:100%;border-radius:16px;box-shadow:0 2px 16px #222; background:#181818;"></canvas>
         </section>
@@ -59,22 +58,24 @@
                 </div>
             </section>
 
-        <section class="hover-box">
-            <a href="projects.html"><h2>Projects</h2></a>
-        </section>
-        <section class="hover-box">
-            <a href="bio.html"><h2>About Me</h2></a>
-        </section>
-        <section class="hover-box">
-            <a href="contact.html"><h2>Contact</h2></a>
-        </section>
+        <div class="main-row-links" style="display:flex;justify-content:center;gap:2em;flex-wrap:wrap;margin:2em 0;">
+            <section class="hover-box" style="min-width:180px;">
+                <a href="projects.html"><h2>Projects</h2></a>
+            </section>
+            <section class="hover-box" style="min-width:180px;">
+                <a href="bio.html"><h2>About Me</h2></a>
+            </section>
+            <section class="hover-box" style="min-width:180px;">
+                <a href="contact.html"><h2>Contact</h2></a>
+            </section>
+        </div>
         
     </main>
     <footer>
         <p>&copy; 2025 Isaac Hennessey</p>
     </footer>
-    <!-- Scripts loaded at the end, after all DOM elements exist -->
-    <script src="js_interactive_Version12.js"></script>
+        <!-- Scripts loaded at the end, after all DOM elements exist -->
+        <script src="js_interactive_Version12.js"></script>
 </main>
 <script>
 // Make floating-shapes canvas cover the whole viewport
