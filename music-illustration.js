@@ -247,6 +247,23 @@ function renderWaveControls() {
         noteLabel.style.color = wave.color;
         noteLabel.style.fontWeight = 'bold';
         row.appendChild(noteLabel);
+        // Arpeggiate toggle
+        const arpLabel = document.createElement('label');
+        arpLabel.style.color = wave.color;
+        arpLabel.style.display = 'flex';
+        arpLabel.style.alignItems = 'center';
+        arpLabel.style.gap = '2px';
+        const arpCheckbox = document.createElement('input');
+        arpCheckbox.type = 'checkbox';
+        arpCheckbox.checked = wave.arpeggiate !== false; // default true
+        arpCheckbox.onchange = () => {
+            wave.arpeggiate = arpCheckbox.checked;
+            updateRhythm(wave);
+            renderWaveControls();
+        };
+        arpLabel.appendChild(arpCheckbox);
+        arpLabel.appendChild(document.createTextNode('Arpeggiate'));
+        row.appendChild(arpLabel);
         // Arpeggiation interval slider
         const sliderLabel = document.createElement('span');
         sliderLabel.textContent = 'Speed:';
@@ -386,10 +403,9 @@ canvas.addEventListener('mouseup', function(e) {
 function startRhythm(wave) {
     stopRhythm(wave);
     if (!wave) return;
-    let interval = wave.interval || Math.max(60, Math.min(400, wave.wavelength * 1.5));
-    wave.osc = new (window.AudioContext || window.webkitAudioContext)();
-    let playTick = () => {
-        if (!wave.isPlaying) return;
+    if (wave.arpeggiate === false) {
+        // Play sustained note
+        wave.osc = new (window.AudioContext || window.webkitAudioContext)();
         let o = wave.osc.createOscillator();
         o.type = wave.instrument || 'sine';
         o.frequency.value = wave.freq || 392;
@@ -397,10 +413,24 @@ function startRhythm(wave) {
         g.gain.value = 0.25;
         o.connect(g).connect(wave.osc.destination);
         o.start();
-        o.stop(wave.osc.currentTime + 0.18);
-        wave.rhythmTimer = setTimeout(playTick, interval);
-    };
-    playTick();
+        wave._sustainOsc = o;
+    } else {
+        let interval = wave.interval || Math.max(60, Math.min(400, wave.wavelength * 1.5));
+        wave.osc = new (window.AudioContext || window.webkitAudioContext)();
+        let playTick = () => {
+            if (!wave.isPlaying) return;
+            let o = wave.osc.createOscillator();
+            o.type = wave.instrument || 'sine';
+            o.frequency.value = wave.freq || 392;
+            let g = wave.osc.createGain();
+            g.gain.value = 0.25;
+            o.connect(g).connect(wave.osc.destination);
+            o.start();
+            o.stop(wave.osc.currentTime + 0.18);
+            wave.rhythmTimer = setTimeout(playTick, interval);
+        };
+        playTick();
+    }
 }
 
 function updateRhythm(wave) {
@@ -412,8 +442,12 @@ function updateRhythm(wave) {
 function stopRhythm(wave) {
     if (wave.rhythmTimer) clearTimeout(wave.rhythmTimer);
     wave.rhythmTimer = null;
+    if (wave._sustainOsc) {
+        try { wave._sustainOsc.stop(); } catch(e){}
+        wave._sustainOsc = null;
+    }
     if (wave.osc) {
-        wave.osc.close();
+        try { wave.osc.close(); } catch(e){}
         wave.osc = null;
     }
 }
