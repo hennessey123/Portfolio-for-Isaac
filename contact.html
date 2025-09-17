@@ -19,11 +19,44 @@
         <h1>Contact Me</h1>
         <section class="contact-section">
             <p>You can reach me via email or send a message using the form below:</p>
-            <ul>
-                <li><strong>Email:</strong> <a href="mailto:your@email.com">xcisaac@icloud.com</a></li>
-                <li><strong>GitHub:</strong> <a href="https://github.com/hennessey123" target="_blank">hennessey123</a></li>
-            </ul>
-            <form class="contact-form" action="mailto:your@email.com" method="POST" enctype="text/plain">
+            <div class="contact-links" style="display:flex;gap:1.5em;flex-wrap:wrap;justify-content:center;margin:2em 0;">
+                <a class="contact-card" href="mailto:xcisaac@icloud.com" style="text-decoration:none;" title="Email">
+                    <div style="font-size:2em;">📧</div>
+                    <div style="font-weight:bold;">Email</div>
+                    <div style="color:var(--accent);font-size:0.95em;">xcisaac@icloud.com</div>
+                </a>
+                <a class="contact-card" href="https://github.com/hennessey123" target="_blank" style="text-decoration:none;" title="GitHub">
+                    <div style="font-size:2em;">🐙</div>
+                    <div style="font-weight:bold;">GitHub</div>
+                    <div style="color:var(--accent);font-size:0.95em;">hennessey123</div>
+                </a>
+                <a class="contact-card" href="https://www.linkedin.com/in/isaac-hennessey-55222425b/" target="_blank" style="text-decoration:none;" title="LinkedIn">
+                    <div style="font-size:2em;">💼</div>
+                    <div style="font-weight:bold;">LinkedIn</div>
+                    <div style="color:var(--accent);font-size:0.95em;">Isaac Hennessey</div>
+                </a>
+            </div>
+    <style>
+    .contact-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        padding: 1.2em 2em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 160px;
+        transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+        cursor: pointer;
+        margin-bottom: 0.5em;
+    }
+    .contact-card:hover {
+        background: var(--card-hover);
+        box-shadow: 0 4px 24px rgba(120,180,255,0.21);
+        transform: scale(1.06) rotate(-2deg);
+    }
+    </style>
+            <form class="contact-form" action="xcisaac@icloud.com" method="POST" enctype="text/plain">
                 <label for="name">Your Name:</label>
                 <input type="text" id="name" name="name" required>
                 
