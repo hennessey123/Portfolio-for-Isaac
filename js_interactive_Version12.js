@@ -81,6 +81,8 @@ canvas.addEventListener('mouseup', e => {
 // Track mouse for blue cursor ball
 document.addEventListener('mousemove', e => {
     const rect = canvas.getBoundingClientRect();
+    // Use clientX/clientY relative to viewport, minus rect.left/top
+    // Also account for page scroll
     cursorX = e.clientX - rect.left;
     cursorY = e.clientY - rect.top;
 });

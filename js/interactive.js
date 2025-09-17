@@ -6,22 +6,21 @@ let drawing = false;
 let mouse = { x: 0, y: 0 };
 
 function resizeCanvas() {
-    // Use main dimensions, not window
-    canvas.width = main.offsetWidth;
-    canvas.height = main.offsetHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-// Mouse position relative to main
-main.addEventListener('mousemove', (e) => {
-    const rect = main.getBoundingClientRect();
+// Mouse position relative to canvas (viewport)
+document.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
     mouse.x = e.clientX - rect.left;
     mouse.y = e.clientY - rect.top;
 });
 
-main.addEventListener('mousedown', () => { drawing = true; });
-main.addEventListener('mouseup', () => { drawing = false; });
+canvas.addEventListener('mousedown', () => { drawing = true; });
+canvas.addEventListener('mouseup', () => { drawing = false; });
 
 function randomShapeType() {
     const types = ['circle', 'square', 'triangle'];
