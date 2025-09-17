@@ -135,14 +135,14 @@ function drawCursor() {
 // ...existing code...
 
 // Piano key frequencies (C3 to C6, 37 notes including sharps)
-let rootNote = 'C4';
+// Remove global rootNote, each wave will have its own
 const pianoKeysFull = [
     {name: 'C3', freq: 130.81}, {name: 'C#3', freq: 138.59}, {name: 'D3', freq: 146.83}, {name: 'D#3', freq: 155.56}, {name: 'E3', freq: 164.81}, {name: 'F3', freq: 174.61}, {name: 'F#3', freq: 185.00}, {name: 'G3', freq: 196.00}, {name: 'G#3', freq: 207.65}, {name: 'A3', freq: 220.00}, {name: 'A#3', freq: 233.08}, {name: 'B3', freq: 246.94},
     {name: 'C4', freq: 261.63}, {name: 'C#4', freq: 277.18}, {name: 'D4', freq: 293.66}, {name: 'D#4', freq: 311.13}, {name: 'E4', freq: 329.63}, {name: 'F4', freq: 349.23}, {name: 'F#4', freq: 369.99}, {name: 'G4', freq: 392.00}, {name: 'G#4', freq: 415.30}, {name: 'A4', freq: 440.00}, {name: 'A#4', freq: 466.16}, {name: 'B4', freq: 493.88},
     {name: 'C5', freq: 523.25}, {name: 'C#5', freq: 554.37}, {name: 'D5', freq: 587.33}, {name: 'D#5', freq: 622.25}, {name: 'E5', freq: 659.25}, {name: 'F5', freq: 698.46}, {name: 'F#5', freq: 739.99}, {name: 'G5', freq: 783.99}, {name: 'G#5', freq: 830.61}, {name: 'A5', freq: 880.00}, {name: 'A#5', freq: 932.33}, {name: 'B5', freq: 987.77},
     {name: 'C6', freq: 1046.50}
 ];
-function yToPianoFreq(y) {
+function yToPianoFreq(y, rootNote) {
     // Map y to a note, centered on rootNote
     const rootIdx = pianoKeysFull.findIndex(k => k.name === rootNote);
     const notesToShow = 13; // one octave
@@ -153,45 +153,18 @@ function yToPianoFreq(y) {
     return keys[idx].freq;
 }
 
-// Add dropdown for root note selection
-window.addEventListener('DOMContentLoaded', function() {
-    const container = document.querySelector('.hover-box');
-    if (!container) return;
-    let dropdown = document.createElement('select');
-    dropdown.id = 'root-note-dropdown';
-    dropdown.style.marginBottom = '12px';
-    dropdown.style.background = '#23263a';
-    dropdown.style.color = '#6fc2ff';
-    dropdown.style.border = '1px solid #6fc2ff';
-    dropdown.style.borderRadius = '6px';
-    dropdown.style.padding = '6px 12px';
-    pianoKeysFull.forEach(k => {
-        let opt = document.createElement('option');
-        opt.value = k.name;
-        opt.textContent = k.name;
-        if (k.name === rootNote) opt.selected = true;
-        dropdown.appendChild(opt);
-    });
-    dropdown.onchange = function() {
-        rootNote = dropdown.value;
-        // Update all wave frequencies
-        waves.forEach(w => w.freq = yToPianoFreq(height/2));
-        renderWaveControls();
-    };
-    container.parentNode.insertBefore(dropdown, container);
-});
+// Remove global root note dropdown. Each wave will have its own note dropdown.
 // ...existing code...
 
 function animate() {
     ctx.clearRect(0, 0, width, height);
     let stackOffset = -60 * (waves.length-1)/2;
     waves.forEach((wave, i) => {
-        // Animate horizontal offset after release
         if (!wave.xOffset) wave.xOffset = 0;
-        if (!wave.isDrawing) wave.xOffset += 0.8 * (i%2===0 ? 1 : -1); // move left/right
-        // If note is not fixed, update freq based on current vertical position
+        if (!wave.isDrawing) wave.xOffset += 0.8 * (i%2===0 ? 1 : -1);
         let y = height/2 + stackOffset + i*60;
-        wave.freq = yToPianoFreq(y);
+        // Use wave.rootNote for mapping
+        wave.freq = yToPianoFreq(y, wave.rootNote || 'C4');
         drawWave(wave.amplitude, wave.wavelength, wave.color, stackOffset + i*60, wave.xOffset);
     });
     drawCursor();
@@ -233,6 +206,25 @@ function renderWaveControls() {
         label.style.color = wave.color;
         label.style.fontWeight = 'bold';
         row.appendChild(label);
+        // Note dropdown for this wave
+        const noteSelect = document.createElement('select');
+        noteSelect.style.background = '#23263a';
+        noteSelect.style.color = wave.color;
+        noteSelect.style.border = '1px solid ' + wave.color;
+        noteSelect.style.borderRadius = '6px';
+        noteSelect.style.padding = '2px 10px';
+        pianoKeysFull.forEach(k => {
+            let opt = document.createElement('option');
+            opt.value = k.name;
+            opt.textContent = k.name;
+            if ((wave.rootNote || 'C4') === k.name) opt.selected = true;
+            noteSelect.appendChild(opt);
+        });
+        noteSelect.onchange = () => {
+            wave.rootNote = noteSelect.value;
+            renderWaveControls();
+        };
+        row.appendChild(noteSelect);
         // Show current note name
         const pianoKeys = [
             {name: 'C4', freq: 261.63},
@@ -255,6 +247,22 @@ function renderWaveControls() {
         noteLabel.style.color = wave.color;
         noteLabel.style.fontWeight = 'bold';
         row.appendChild(noteLabel);
+        // Arpeggiation interval slider
+        const sliderLabel = document.createElement('span');
+        sliderLabel.textContent = 'Speed:';
+        sliderLabel.style.color = wave.color;
+        row.appendChild(sliderLabel);
+        const intervalSlider = document.createElement('input');
+        intervalSlider.type = 'range';
+        intervalSlider.min = 60;
+        intervalSlider.max = 400;
+        intervalSlider.value = wave.interval || 200;
+        intervalSlider.style.width = '80px';
+        intervalSlider.oninput = () => {
+            wave.interval = parseInt(intervalSlider.value);
+            updateRhythm(wave);
+        };
+        row.appendChild(intervalSlider);
         // Instrument dropdown
         const instrumentSelect = document.createElement('select');
         instrumentSelect.style.background = '#222';
@@ -330,6 +338,7 @@ canvas.addEventListener('mousedown', function(e) {
     // Start with default amplitude and wavelength
     const color = palette[colorIdx % palette.length];
     colorIdx++;
+    let defaultInterval = Math.max(60, Math.min(400, 80 * 1.5));
     currentWave = {
         amplitude: 40,
         wavelength: 80,
@@ -338,7 +347,9 @@ canvas.addEventListener('mousedown', function(e) {
         osc: null,
         rhythmTimer: null,
         instrument: 'sine',
-        freq: yToPianoFreq(my)
+        rootNote: 'C4',
+        freq: yToPianoFreq(my, 'C4'),
+        interval: defaultInterval
     };
     waves.push(currentWave);
     startRhythm(currentWave);
@@ -356,7 +367,7 @@ canvas.addEventListener('mousemove', function(e) {
     let dragY = Math.max(20, Math.abs(my - height/2));
     currentWave.wavelength = Math.max(20, Math.min(300, dragX));
     currentWave.amplitude = Math.max(10, Math.min(80, dragY));
-    currentWave.freq = yToPianoFreq(my);
+    currentWave.freq = yToPianoFreq(my, currentWave.rootNote || 'C4');
     updateRhythm(currentWave);
     renderWaveControls();
 });
@@ -375,7 +386,7 @@ canvas.addEventListener('mouseup', function(e) {
 function startRhythm(wave) {
     stopRhythm(wave);
     if (!wave) return;
-    let interval = Math.max(60, Math.min(400, wave.wavelength * 1.5));
+    let interval = wave.interval || Math.max(60, Math.min(400, wave.wavelength * 1.5));
     wave.osc = new (window.AudioContext || window.webkitAudioContext)();
     let playTick = () => {
         if (!wave.isPlaying) return;
