@@ -65,6 +65,15 @@ body {
     color: var(--accent-color);
 }
 
+.nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
 main {
     padding-top: 80px;
 }
@@ -376,6 +385,41 @@ main {
 
 .download-button:hover {
     background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: rgba(10, 10, 10, 0.9);
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links a {
+        margin: 1rem 0;
+        text-align: center;
+    }
+
+    .nav-toggle {
+        display: block;
+    }
+
+    .hero-content h1 {
+        font-size: 3rem;
+    }
+
+    .contact-container {
+        grid-template-columns: 1fr;
+    }
 }
 
 footer {
