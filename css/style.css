@@ -386,19 +386,10 @@ footer {
     color: var(--secondary-color);
 }
 
-.music-container {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: var(--card-bg-color);
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
+/* Custom cursor styles (removed cursor: none to keep cursor visible) */
 
-.music-container h2 {
-    font-size: 2rem;
-    color: var(--accent-color);
-    text-align: center;
-    margin-top: 0;
-    margin-bottom: 2rem;
+/* Responsive */
+@media (max-width: 700px) {
+    main, .github-links { gap: 1em; }
+    .hover-box, .hover-card { padding: 1em; min-width: 130px; }
 }

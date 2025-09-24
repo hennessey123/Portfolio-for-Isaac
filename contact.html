@@ -27,49 +27,127 @@
     </nav>
 
     <main>
-        <header class="hero">
-            <div class="hero-content">
-                <h1>Get in Touch</h1>
-                <p class="subtitle">I'd love to hear from you. Let's connect!</p>
+        <h1>Contact Me</h1>
+        <section class="contact-section">
+            <p>You can reach me via email or any of my socials</p>
+            <div class="contact-links" style="display:flex;gap:1.5em;flex-wrap:wrap;justify-content:center;margin:2em 0;">
+                <a class="contact-card" href="mailto:xcisaac@icloud.com" style="text-decoration:none;" title="Email">
+                    <div style="font-size:2em;">📧</div>
+                    <div style="font-weight:bold;">Email</div>
+                    <div style="color:var(--accent);font-size:0.95em;">xcisaac@icloud.com</div>
+                </a>
+                <a class="contact-card" href="https://github.com/hennessey123" target="_blank" style="text-decoration:none;" title="GitHub">
+                    <div style="font-size:2em;">🐙</div>
+                    <div style="font-weight:bold;">GitHub</div>
+                    <div style="color:var(--accent);font-size:0.95em;">hennessey123</div>
+                </a>
+                <a class="contact-card" href="https://www.linkedin.com/in/isaac-hennessey-55222425b/" target="_blank" style="text-decoration:none;" title="LinkedIn">
+                    <div style="font-size:2em;">💼</div>
+                    <div style="font-weight:bold;">LinkedIn</div>
+                    <div style="color:var(--accent);font-size:0.95em;">Isaac Hennessey</div>
+                </a>
+                <a class="contact-card" href="https://www.youtube.com/@isaachennessey679" target="_blank" style="text-decoration:none;" title="Youtube">
+                    <div style="font-size:2em;">🐙</div>
+                    <div style="font-weight:bold;">Youtube</div>
+                    <div style="color:var(--accent);font-size:0.95em;">tubeuser</div>
+                </a>
             </div>
-        </header>
-
-        <section class="content-section">
-            <div class="contact-container">
-                <div class="contact-info">
-                    <h3>Contact Information</h3>
-                    <p>Feel free to reach out through email or connect with me on GitHub.</p>
-                    <ul>
-                        <li><strong>Email:</strong> <a href="mailto:xcisaac@icloud.com">xcisaac@icloud.com</a></li>
-                        <li><strong>GitHub:</strong> <a href="https://github.com/hennessey123" target="_blank">github.com/hennessey123</a></li>
-                    </ul>
-                </div>
-                <div class="contact-form-container">
-                    <h3>Send a Message</h3>
-                    <form class="contact-form" action="https://formspree.io/f/{your_form_id}" method="POST">
-                        <div class="form-group">
-                            <label for="name">Your Name</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Your Email</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" name="message" rows="5" required></textarea>
-                        </div>
-                        <button type="submit">Send Message</button>
-                    </form>
-                </div>
-            </div>
+    <style>
+    .contact-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        padding: 1.2em 2em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 160px;
+        transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+        cursor: pointer;
+        margin-bottom: 0.5em;
+    }
+    .contact-card:hover {
+        background: var(--card-hover);
+        box-shadow: 0 4px 24px rgba(120,180,255,0.21);
+        transform: scale(1.06) rotate(-2deg);
+    }
+    </style>
+          
         </section>
     </main>
 
     <footer>
         <p>&copy; 2025 Isaac Hennessey. All Rights Reserved.</p>
     </footer>
-
-    <script src="js/interactive.js"></script>
+    <script src="js_interactive_Version12.js"></script>
+    <script>
+    // Dark/Light mode toggle and confetti
+    const root = document.documentElement;
+    function setMode(mode) {
+        if (mode === 'light') {
+            root.style.setProperty('--bg', '#f7f7fa');
+            root.style.setProperty('--fg', '#181a20');
+            root.style.setProperty('--card-bg', '#fff');
+            root.style.setProperty('--card-hover', '#e0e7ff');
+            root.style.setProperty('--accent', '#6fc2ff');
+            root.style.setProperty('--shadow', '0 2px 16px rgba(22,80,150,0.10)');
+            document.body.classList.add('light-mode');
+            document.body.classList.remove('dark-mode');
+        } else {
+            root.style.setProperty('--bg', '#121212');
+            root.style.setProperty('--fg', '#fff');
+            root.style.setProperty('--card-bg', '#23263a');
+            root.style.setProperty('--card-hover', '#33406e');
+            root.style.setProperty('--accent', '#6fc2ff');
+            root.style.setProperty('--shadow', '0 2px 16px rgba(22,80,150,0.20)');
+            document.body.classList.add('dark-mode');
+            document.body.classList.remove('light-mode');
+        }
+    }
+    function getMode() {
+        return document.body.classList.contains('light-mode') ? 'light' : 'dark';
+    }
+    function confetti() {
+        const colors = ['#6fc2ff','#ffd700','#ff6f91','#39ff14','#b39ddb','#ffb347'];
+        for (let i=0; i<80; i++) {
+            let conf = document.createElement('div');
+            conf.style.position = 'fixed';
+            conf.style.left = Math.random()*100 + 'vw';
+            conf.style.top = '-2vh';
+            conf.style.width = '10px';
+            conf.style.height = '10px';
+            conf.style.background = colors[Math.floor(Math.random()*colors.length)];
+            conf.style.opacity = 0.8;
+            conf.style.borderRadius = '50%';
+            conf.style.zIndex = 9999;
+            conf.style.pointerEvents = 'none';
+            conf.style.transition = 'top 1.6s cubic-bezier(.4,1.4,.6,1), opacity 0.8s';
+            document.body.appendChild(conf);
+            setTimeout(()=>{
+                conf.style.top = (80+Math.random()*20)+'vh';
+                conf.style.opacity = 0;
+            }, 10);
+            setTimeout(()=>{
+                conf.remove();
+            }, 1800);
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        let savedMode = localStorage.getItem('theme-mode');
+        if (savedMode === 'light' || savedMode === 'dark') {
+            setMode(savedMode);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            setMode('light');
+        } else {
+            setMode('dark');
+        }
+        document.getElementById('mode-toggle').onclick = function() {
+            const newMode = getMode() === 'dark' ? 'light' : 'dark';
+            setMode(newMode);
+            localStorage.setItem('theme-mode', newMode);
+            confetti();
+        };
+    });
+    </script>
 </body>
 </html>

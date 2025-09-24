@@ -5,9 +5,21 @@
     <title>About Isaac Hennessey</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        main {
+            position: relative;
+            z-index: 1;
+        }
+        #floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
     <canvas id="background-canvas"></canvas>
@@ -48,6 +60,7 @@
                 </p>
             </div>
         </section>
+
     </main>
 
     <footer>

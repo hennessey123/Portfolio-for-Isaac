@@ -1,83 +1,99 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.getElementById('background-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+const main = document.querySelector('main');
+const canvas = document.getElementById('floating-shapes');
+const ctx = canvas.getContext('2d');
+let shapes = [];
+let drawing = false;
+let mouse = { x: 0, y: 0 };
 
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-    window.addEventListener('resize', () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-    });
-
-    const particles = [];
-    const particleCount = 50;
-
-    class Particle {
-        constructor() {
-            this.x = Math.random() * width;
-            this.y = Math.random() * height;
-            this.vx = (Math.random() - 0.5) * 0.5;
-            this.vy = (Math.random() - 0.5) * 0.5;
-            this.radius = 1 + Math.random() * 2;
-            this.alpha = 0.5 + Math.random() * 0.5;
-        }
-
-        update() {
-            this.x += this.vx;
-            this.y += this.vy;
-
-            if (this.x < 0 || this.x > width) this.vx *= -1;
-            if (this.y < 0 || this.y > height) this.vy *= -1;
-        }
-
-        draw() {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(0, 123, 255, ${this.alpha})`;
-            ctx.fill();
-        }
-    }
-
-    function init() {
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, width, height);
-
-        particles.forEach(p => {
-            p.update();
-            p.draw();
-        });
-
-        connectParticles();
-
-        requestAnimationFrame(animate);
-    }
-
-    function connectParticles() {
-        for (let i = 0; i < particles.length; i++) {
-            for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < 150) {
-                    ctx.beginPath();
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.strokeStyle = `rgba(0, 123, 255, ${1 - distance / 150})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.stroke();
-                }
-            }
-        }
-    }
-
-    init();
-    animate();
+// Mouse position relative to canvas (viewport)
+document.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
 });
+
+canvas.addEventListener('mousedown', () => { drawing = true; });
+canvas.addEventListener('mouseup', () => { drawing = false; });
+
+function randomShapeType() {
+    const types = ['circle', 'square', 'triangle'];
+    return types[Math.floor(Math.random() * types.length)];
+}
+
+function drawCursor() {
+    ctx.save();
+    ctx.shadowColor = "#6fc2ff";
+    ctx.shadowBlur = 20;
+    ctx.beginPath();
+    ctx.arc(mouse.x, mouse.y, 14, 0, Math.PI * 2);
+    ctx.strokeStyle = "#6fc2ff";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.restore();
+}
+
+function addShape(x, y) {
+    const type = randomShapeType();
+    const radius = 22 + Math.random() * 14;
+    const dx = (Math.random() - 0.5) * 1.2;
+    const dy = (Math.random() - 0.5) * 1.2;
+    const rot = Math.random() * Math.PI * 2;
+    shapes.push({
+        type, x, y, radius,
+        dx, dy, rot, dr: (Math.random()-0.5)*0.02,
+        alpha: 1
+    });
+}
+
+function drawShape(shape) {
+    ctx.save();
+    ctx.globalAlpha = shape.alpha;
+    ctx.translate(shape.x, shape.y);
+    ctx.rotate(shape.rot);
+    ctx.strokeStyle = "#6fc2ff";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    if (shape.type === 'circle') {
+        ctx.arc(0, 0, shape.radius, 0, Math.PI * 2);
+    } else if (shape.type === 'square') {
+        ctx.rect(-shape.radius, -shape.radius, shape.radius*2, shape.radius*2);
+    } else if (shape.type === 'triangle') {
+        ctx.moveTo(0, -shape.radius);
+        ctx.lineTo(shape.radius, shape.radius);
+        ctx.lineTo(-shape.radius, shape.radius);
+        ctx.closePath();
+    }
+    ctx.stroke();
+    ctx.restore();
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw floating shapes
+    for (let shape of shapes) {
+        drawShape(shape);
+        shape.x += shape.dx;
+        shape.y += shape.dy;
+        shape.rot += shape.dr;
+        shape.alpha -= 0.002;
+    }
+    // Remove faded shapes
+    shapes = shapes.filter(s => s.alpha > 0.06);
+
+    // Draw interactive cursor
+    drawCursor();
+
+    // If holding mouse, add shapes at cursor
+    if (drawing) addShape(mouse.x, mouse.y);
+
+    requestAnimationFrame(animate);
+}
+animate();
