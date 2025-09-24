@@ -5,47 +5,55 @@
     <title>About Isaac Hennessey</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        main {
-            position: relative;
-            z-index: 1;
-        }
-        #floating-shapes {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar">
-        <a href="index.html">Home</a>
-        <a href="projects.html">Projects</a>
-        <a href="bio.html">Bio</a>
-        <a href="contact.html">Contact</a>
-        <a href="resume.html">Resume</a>
-    <a href="music.html">Music</a>
-    </nav>
-    <header>
-        <h1>About Isaac Hennessey</h1>
-    </header>
-    <main>
-        <canvas id="floating-shapes"></canvas>
-        <section class="bio-summary">
-            <h2>Bio</h2>
-            <p>
-                Isaac Hennessey is a computer science student at Samford University. He is currently learning software development.
-                
-            </p>
-        </section>
+    <canvas id="background-canvas"></canvas>
 
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Isaac Hennessey</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="projects.html">Projects</a>
+                <a href="bio.html">Bio</a>
+                <a href="contact.html">Contact</a>
+                <a href="resume.html">Resume</a>
+                <a href="music.html">Music</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <header class="hero">
+            <div class="hero-content">
+                <h1>About Me</h1>
+                <p class="subtitle">My journey in technology and beyond.</p>
+            </div>
+        </header>
+
+        <section class="content-section bio-content">
+            <div class="bio-text">
+                <h2>My Story</h2>
+                <p>
+                    I am a passionate and driven computer science student at Samford University with a keen interest in software development and creative technologies. My journey into the world of coding began with a fascination for how things work, which quickly evolved into a desire to build and create innovative solutions.
+                </p>
+                <p>
+                    Throughout my academic career, I have immersed myself in various programming languages and technologies, including Python, Java, and SQL. I enjoy tackling complex problems and collaborating with others to bring ideas to life. Beyond the screen, I am an avid musician, finding parallels between the structure of music and the logic of code.
+                </p>
+                <p>
+                    I am constantly seeking new challenges and opportunities to grow as a developer and as an individual. I believe in the power of technology to make a positive impact on the world, and I am excited to contribute to that future.
+                </p>
+            </div>
+        </section>
     </main>
+
     <footer>
-        <p>&copy; 2025 Isaac Hennessey</p>
+        <p>&copy; 2025 Isaac Hennessey. All Rights Reserved.</p>
     </footer>
+
+    <script src="js/interactive.js"></script>
 </body>
 </html>

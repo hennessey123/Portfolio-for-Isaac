@@ -5,86 +5,77 @@
     <title>Isaac Hennessey | Portfolio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        main {
-            position: relative;
-            z-index: 1;
-        }
-        #floating-shapes {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-   
-    <nav class="navbar">
-        <a href="index.html">Home</a>
-        <a href="projects.html">Projects</a>
-        <a href="bio.html">Bio</a>
-        <a href="contact.html">Contact</a>
-        <a href="resume.html">Resume</a>
-    <a href="music.html">Music</a>
-    </nav>
-    <header>
-        <h1>Isaac Hennessey | Portfolio</h1>
-    </header>
-    <main>
-    <!-- Canvas for floating shapes, now covers the entire page -->
-    <canvas id="floating-shapes" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;"></canvas>
-        <!-- Music illustration canvas -->
-        <section style="width:100%;text-align:center;margin-top:24px;">
-            <canvas id="music-canvas" width="600" height="180" style="max-width:100%;border-radius:16px;box-shadow:0 2px 16px #222; background:#181818;"></canvas>
-        </section>
-        <section>
-                <h2 style="text-align:center;">Technical Skills</h2>
-                <div class="skills-3d-container same-size-row">
-                    <div class="logo-3d floating" title="Python">
-                        <img src="images/python-logo.jpg" alt="Python" class="logo-img same-size-logo">
-                    </div>
-                    <div class="logo-3d floating" title="Java">
-                        <img src="images/java-logo.png" alt="Java" class="logo-img same-size-logo">
-                    </div>
-                    <div class="logo-3d floating" title="SQL">
-                        <img src="images/sql-logo.jpg" alt="SQL" class="logo-img same-size-logo">
-                    </div>
-                    <div class="logo-3d floating" title="PostgreSQL">
-                        <img src="images/postgresql-logo.png" alt="PostgreSQL" class="logo-img same-size-logo">
-                    </div>
-                </div>
-            </section>
+    <canvas id="background-canvas"></canvas>
 
-        <section class="hover-box">
-            <a href="projects.html"><h2>Projects</h2></a>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Isaac Hennessey</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="projects.html">Projects</a>
+                <a href="bio.html">Bio</a>
+                <a href="contact.html">Contact</a>
+                <a href="resume.html">Resume</a>
+                <a href="music.html">Music</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <header class="hero">
+            <div class="hero-content">
+                <h1>Isaac Hennessey</h1>
+                <p class="subtitle">Software Developer | Musician | Creator</p>
+            </div>
+        </header>
+
+        <section id="skills" class="content-section">
+            <h2>Technical Skills</h2>
+            <div class="skills-container">
+                <div class="skill-card" title="Python">
+                    <img src="images/python-logo.jpg" alt="Python">
+                    <span>Python</span>
+                </div>
+                <div class="skill-card" title="Java">
+                    <img src="images/java-logo.png" alt="Java">
+                    <span>Java</span>
+                </div>
+                <div class="skill-card" title="SQL">
+                    <img src="images/sql-logo.jpg" alt="SQL">
+                    <span>SQL</span>
+                </div>
+                <div class="skill-card" title="PostgreSQL">
+                    <img src="images/postgresql-logo.png" alt="PostgreSQL">
+                    <span>PostgreSQL</span>
+                </div>
+            </div>
         </section>
-        <section class="hover-box">
-            <a href="bio.html"><h2>About Me</h2></a>
+
+        <section id="navigation-cards" class="content-section">
+            <a href="projects.html" class="nav-card">
+                <h3>Projects</h3>
+                <p>Explore my recent work and personal projects.</p>
+            </a>
+            <a href="bio.html" class="nav-card">
+                <h3>About Me</h3>
+                <p>Learn more about my background and passions.</p>
+            </a>
+            <a href="contact.html" class="nav-card">
+                <h3>Contact</h3>
+                <p>Get in touch for collaborations or inquiries.</p>
+            </a>
         </section>
-        <section class="hover-box">
-            <a href="contact.html"><h2>Contact</h2></a>
-        </section>
-        
     </main>
+
     <footer>
-        <p>&copy; 2025 Isaac Hennessey</p>
+        <p>&copy; 2025 Isaac Hennessey. All Rights Reserved.</p>
     </footer>
-    <!-- Scripts loaded at the end, after all DOM elements exist -->
-    <script src="music/music-illustration.js"></script>
-</main>
-<script>
-// Make floating-shapes canvas cover the whole viewport
-const bgCanvas = document.getElementById('floating-shapes');
-function resizeBgCanvas() {
-    bgCanvas.width = window.innerWidth;
-    bgCanvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resizeBgCanvas);
-resizeBgCanvas();
-</script>
+
+    <script src="js/interactive.js"></script>
 </body>
 </html>

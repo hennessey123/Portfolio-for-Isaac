@@ -4,76 +4,48 @@
     <meta charset="UTF-8">
     <title>Isaac Hennessey | Music</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/style.css">
-    <style>
-        body {
-            color: #fff !important;
-        }
-        .music-container {
-            max-width: 600px;
-            margin: 2em auto;
-            background: var(--card-bg);
-            border-radius: 18px;
-            box-shadow: var(--shadow);
-            padding: 2em;
-            text-align: center;
-        }
-        iframe {
-            border-radius: 12px;
-        }
-        h1, h2, p, nav a {
-            color: #fff !important;
-        }
-        /* Custom glowing cursor */
-        .custom-cursor {
-            position: fixed;
-            pointer-events: none;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 0 12px #fff, 0 0 24px #6fc2ff;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: background 0.2s;
-        }
-    </style>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const cursor = document.createElement('div');
-        cursor.className = 'custom-cursor';
-        document.body.appendChild(cursor);
-        document.addEventListener('mousemove', function(e) {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
-    });
-    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body style="background: #121212;">
+<body>
+    <canvas id="background-canvas"></canvas>
+
     <nav class="navbar">
-        <a href="index.html">Home</a>
-        <a href="projects.html">Projects</a>
-        <a href="bio.html">Bio</a>
-        <a href="contact.html">Contact</a>
-        <a href="resume.html">Resume</a>
-        <a href="index.html">Music</a>
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Isaac Hennessey</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="projects.html">Projects</a>
+                <a href="bio.html">Bio</a>
+                <a href="contact.html">Contact</a>
+                <a href="resume.html">Resume</a>
+                <a href="music.html">Music</a>
+            </div>
+        </div>
     </nav>
-    <header>
-        <h1>Isaac Hennessey | Music</h1>
-    </header>
+
     <main>
-        <div class="music-container">
-            <h2>Listen to My Music</h2>
-            <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/artist/6g8Cq6nvqIR42fcZUcFT1L?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-        <div style="max-width:600px;margin:2em auto;">
-            <canvas id="music-canvas" width="600" height="180" style="width:100%;background:#181818;border-radius:12px;display:block;"></canvas>
-        </div>
+        <header class="hero">
+            <div class="hero-content">
+                <h1>My Music</h1>
+                <p class="subtitle">Creative expressions in sound.</p>
+            </div>
+        </header>
+
+        <section class="content-section">
+            <div class="music-container">
+                <h2>Listen on Spotify</h2>
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/artist/6g8Cq6nvqIR42fcZUcFT1L?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+        </section>
     </main>
+
     <footer>
-        <p>&copy; 2025 Isaac Hennessey</p>
+        <p>&copy; 2025 Isaac Hennessey. All Rights Reserved.</p>
     </footer>
+
+    <script src="js/interactive.js"></script>
 </body>
-<script src="music-illustration.js"></script>
 </html>

@@ -5,50 +5,70 @@
     <title>Isaac Hennessey | Projects</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        main {
-            position: relative;
-            z-index: 1;
-        }
-        #floating-shapes {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <canvas id="background-canvas"></canvas>
+
     <nav class="navbar">
-        <a href="index.html">Home</a>
-        <a href="projects.html">Projects</a>
-        <a href="bio.html">Bio</a>
-        <a href="contact.html">Contact</a>
-        <a href="resume.html">Resume</a>
-    <a href="music.html">Music</a>
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Isaac Hennessey</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="projects.html">Projects</a>
+                <a href="bio.html">Bio</a>
+                <a href="contact.html">Contact</a>
+                <a href="resume.html">Resume</a>
+                <a href="music.html">Music</a>
+            </div>
+        </div>
     </nav>
-    <header>
-        <h1>Projects</h1>
-    </header>
+
     <main>
-        <canvas id="floating-shapes"></canvas>
-        <section class="project-list">
-            <h2>Featured Projects</h2>
-            <ul>
-                <li><a href="https://github.com/hennessey123/335project" target="_blank">335 Project</a></li>
-                <li><a href="https://github.com/hennessey123/bombardillocrocadillo" target="_blank">Bomber Game</a></li>
-                <li><a href="https://github.com/hennessey123/hennessey123.github.io" target="_blank">Personal Website Repo</a></li>
-                <li><a href="https://github.com/praiseisaac/senior-seminar-demo" target="_blank">Senior Seminar Demo</a></li>
-                <li><a href="https://github.com/afraiddocument/Mobilized-Food-Trucks-Project" target="_blank">Food Trucks Project</a></li>
-            </ul>
+        <header class="hero">
+            <div class="hero-content">
+                <h1>My Projects</h1>
+                <p class="subtitle">A collection of my work in software development.</p>
+            </div>
+        </header>
+
+        <section class="content-section">
+            <div class="project-grid">
+                <div class="project-card">
+                    <h3>335 Project</h3>
+                    <p>A significant university project demonstrating core software engineering principles.</p>
+                    <a href="https://github.com/hennessey123/335project" target="_blank" class="project-link">View on GitHub</a>
+                </div>
+                <div class="project-card">
+                    <h3>Bomber Game</h3>
+                    <p>A classic bomber-style game developed in Java.</p>
+                    <a href="https://github.com/hennessey123/bombardillocrocadillo" target="_blank" class="project-link">View on GitHub</a>
+                </div>
+                <div class="project-card">
+                    <h3>Personal Website</h3>
+                    <p>The repository for this portfolio website, showcasing modern web technologies.</p>
+                    <a href="https://github.com/hennessey123/hennessey123.github.io" target="_blank" class="project-link">View on GitHub</a>
+                </div>
+                <div class="project-card">
+                    <h3>Senior Seminar Demo</h3>
+                    <p>A demonstration project for my senior seminar, highlighting advanced concepts.</p>
+                    <a href="https://github.com/praiseisaac/senior-seminar-demo" target="_blank" class="project-link">View on GitHub</a>
+                </div>
+                <div class="project-card">
+                    <h3>Mobilized Food Trucks</h3>
+                    <p>A collaborative project to create a platform for food truck vendors and customers.</p>
+                    <a href="https://github.com/afraiddocument/Mobilized-Food-Trucks-Project" target="_blank" class="project-link">View on GitHub</a>
+                </div>
+            </div>
         </section>
     </main>
+
     <footer>
-        <p>&copy; 2025 Isaac Hennessey</p>
+        <p>&copy; 2025 Isaac Hennessey. All Rights Reserved.</p>
     </footer>
+
     <script src="js/interactive.js"></script>
 </body>
 </html>

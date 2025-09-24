@@ -5,26 +5,49 @@
     <title>Resume | Isaac Hennessey</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <canvas id="background-canvas"></canvas>
+
     <nav class="navbar">
-        <a href="index.html">Home</a>
-        <a href="projects.html">Projects</a>
-        <a href="bio.html">Bio</a>
-        <a href="contact.html">Contact</a>
-        <a href="resume.html">Resume</a>
-    <a href="music.html">Music</a>
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Isaac Hennessey</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="projects.html">Projects</a>
+                <a href="bio.html">Bio</a>
+                <a href="contact.html">Contact</a>
+                <a href="resume.html">Resume</a>
+                <a href="music.html">Music</a>
+            </div>
+        </div>
     </nav>
-    <header>
-        <h1>Resume</h1>
-    </header>
+
     <main>
-        <section style="text-align:center;">
-            <img src="images/isaac-hennessey-resume.png" alt="Isaac Hennessey Resume" style="max-width:90%; height:auto; box-shadow:0 4px 16px rgba(0,0,0,0.15); border-radius:8px;">
+        <header class="hero">
+            <div class="hero-content">
+                <h1>My Resume</h1>
+                <p class="subtitle">A detailed overview of my skills, experience, and education.</p>
+            </div>
+        </header>
+
+        <section class="content-section resume-section">
+            <div class="resume-container">
+                <img src="images/isaac-hennessey-resume.png" alt="Isaac Hennessey Resume">
+            </div>
+            <div class="resume-download">
+                <a href="images/isaac-hennessey-resume.png" download="Isaac_Hennessey_Resume.png" class="download-button">Download Resume</a>
+            </div>
         </section>
     </main>
+
     <footer>
-        <p>&copy; 2025 Isaac Hennessey</p>
+        <p>&copy; 2025 Isaac Hennessey. All Rights Reserved.</p>
     </footer>
+
+    <script src="js/interactive.js"></script>
 </body>
 </html>

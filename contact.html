@@ -5,40 +5,71 @@
     <title>Contact | Isaac Hennessey</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <canvas id="background-canvas"></canvas>
+
     <nav class="navbar">
-        <a href="index.html">Home</a>
-        <a href="projects.html">Projects</a>
-        <a href="bio.html">Bio</a>
-        <a href="contact.html">Contact</a>
-        <a href="resume.html">Resume</a>
-    <a href="music.html">Music</a>
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Isaac Hennessey</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="projects.html">Projects</a>
+                <a href="bio.html">Bio</a>
+                <a href="contact.html">Contact</a>
+                <a href="resume.html">Resume</a>
+                <a href="music.html">Music</a>
+            </div>
+        </div>
     </nav>
+
     <main>
-        <h1>Contact Me</h1>
-        <section class="contact-section">
-            <p>You can reach me via email or send a message using the form below:</p>
-            <ul>
-                <li><strong>Email:</strong> <a href="mailto:your@email.com">xcisaac@icloud.com</a></li>
-                <li><strong>GitHub:</strong> <a href="https://github.com/hennessey123" target="_blank">hennessey123</a></li>
-            </ul>
-            <form class="contact-form" action="mailto:your@email.com" method="POST" enctype="text/plain">
-                <label for="name">Your Name:</label>
-                <input type="text" id="name" name="name" required>
-                
-                <label for="email">Your Email:</label>
-                <input type="email" id="email" name="email" required>
-                
-                <label for="message">Message:</label>
-                <textarea id="message" name="message" rows="5" required></textarea>
-                
-                <button type="submit">Send Message</button>
-            </form>
+        <header class="hero">
+            <div class="hero-content">
+                <h1>Get in Touch</h1>
+                <p class="subtitle">I'd love to hear from you. Let's connect!</p>
+            </div>
+        </header>
+
+        <section class="content-section">
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <p>Feel free to reach out through email or connect with me on GitHub.</p>
+                    <ul>
+                        <li><strong>Email:</strong> <a href="mailto:xcisaac@icloud.com">xcisaac@icloud.com</a></li>
+                        <li><strong>GitHub:</strong> <a href="https://github.com/hennessey123" target="_blank">github.com/hennessey123</a></li>
+                    </ul>
+                </div>
+                <div class="contact-form-container">
+                    <h3>Send a Message</h3>
+                    <form class="contact-form" action="https://formspree.io/f/{your_form_id}" method="POST">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Your Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit">Send Message</button>
+                    </form>
+                </div>
+            </div>
         </section>
     </main>
+
     <footer>
-        <p>&copy; 2025 Isaac Hennessey</p>
+        <p>&copy; 2025 Isaac Hennessey. All Rights Reserved.</p>
     </footer>
+
+    <script src="js/interactive.js"></script>
 </body>
 </html>
