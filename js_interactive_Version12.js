@@ -97,13 +97,14 @@ canvas.addEventListener('mousedown', e => {
     startX = e.offsetX;
     startY = e.offsetY;
 
-    // Check if clicked on a circle
-    circles.forEach(c => {
+    // Check if clicked on a circle (iterate backwards to safely remove)
+    for (let i = circles.length - 1; i >= 0; i--) {
+        const c = circles[i];
         if (Math.hypot(e.offsetX - c.x, e.offsetY - c.y) < c.radius) {
             explodeCircle(c);
-            circles.splice(circles.indexOf(c), 1);
+            circles.splice(i, 1);
         }
-    });
+    }
 });
 canvas.addEventListener('mouseup', e => {
     if(drawing) {
