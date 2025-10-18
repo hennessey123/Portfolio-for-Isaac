@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const ctx = canvas.getContext('2d');
     let shapes = [];
-    let mouse = { x: 0, y: 0, dx: 0, dy: 0, lastX: 0, lastY: 0 };
-    let cursor = { x: 0, y: 0, size: 14, angle: 0 };
+    let drawing = false;
+    let mouse = { x: 0, y: 0 };
 
     function resizeCanvas() {
         canvas.width = window.innerWidth;
@@ -17,30 +17,40 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', resizeCanvas);
 
     document.addEventListener('mousemove', (e) => {
-        mouse.lastX = mouse.x;
-        mouse.lastY = mouse.y;
         mouse.x = e.clientX;
         mouse.y = e.clientY;
-        mouse.dx = mouse.x - mouse.lastX;
-        mouse.dy = mouse.y - mouse.lastY;
     });
+
+    document.addEventListener('mousedown', () => { drawing = true; });
+    document.addEventListener('mouseup', () => { drawing = false; });
 
     function randomShapeType() {
         const types = ['circle', 'square', 'triangle'];
         return types[Math.floor(Math.random() * types.length)];
     }
 
-    function addShape(x, y, dx, dy) {
+    function drawCursor() {
+        ctx.save();
+        ctx.shadowColor = "#007bff";
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(mouse.x, mouse.y, 14, 0, Math.PI * 2);
+        ctx.strokeStyle = "#007bff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function addShape(x, y) {
         const type = randomShapeType();
-        const radius = 10 + Math.random() * 15;
+        const radius = 22 + Math.random() * 14;
+        const dx = (Math.random() - 0.5) * 1.2;
+        const dy = (Math.random() - 0.5) * 1.2;
+        const rot = Math.random() * Math.PI * 2;
         shapes.push({
             type, x, y, radius,
-            dx: dx * 0.5 + (Math.random() - 0.5) * 2,
-            dy: dy * 0.5 + (Math.random() - 0.5) * 2,
-            rot: Math.random() * Math.PI * 2,
-            dr: (Math.random() - 0.5) * 0.03,
-            alpha: 1,
-            life: 0
+            dx, dy, rot, dr: (Math.random() - 0.5) * 0.02,
+            alpha: 1
         });
     }
 
@@ -49,114 +59,48 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.globalAlpha = shape.alpha;
         ctx.translate(shape.x, shape.y);
         ctx.rotate(shape.rot);
-        ctx.strokeStyle = `hsla(210, 100%, 70%, ${shape.alpha})`;
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#007bff";
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
         if (shape.type === 'circle') {
             ctx.arc(0, 0, shape.radius, 0, Math.PI * 2);
         } else if (shape.type === 'square') {
-            ctx.rect(-shape.radius * 0.7, -shape.radius * 0.7, shape.radius * 1.4, shape.radius * 1.4);
+            ctx.rect(-shape.radius, -shape.radius, shape.radius * 2, shape.radius * 2);
         } else if (shape.type === 'triangle') {
             ctx.moveTo(0, -shape.radius);
-            ctx.lineTo(shape.radius, shape.radius * 0.7);
-            ctx.lineTo(-shape.radius, shape.radius * 0.7);
+            ctx.lineTo(shape.radius, shape.radius);
+            ctx.lineTo(-shape.radius, shape.radius);
             ctx.closePath();
         }
         ctx.stroke();
         ctx.restore();
     }
 
-    function drawCursor() {
-        cursor.x += (mouse.x - cursor.x) * 0.2;
-        cursor.y += (mouse.y - cursor.y) * 0.2;
-        
-        const speed = Math.sqrt(mouse.dx * mouse.dx + mouse.dy * mouse.dy);
-        const targetSize = 14 + speed * 0.5;
-        cursor.size += (targetSize - cursor.size) * 0.2;
-        
-        cursor.angle += speed * 0.01;
-
-        ctx.save();
-        ctx.translate(cursor.x, cursor.y);
-        ctx.rotate(cursor.angle);
-        
-        ctx.beginPath();
-        ctx.arc(0, 0, cursor.size, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(0, 123, 255, 0.8)";
-        ctx.lineWidth = 2;
-        ctx.shadowColor = "rgba(0, 123, 255, 1)";
-        ctx.shadowBlur = 20;
-        ctx.stroke();
-        
-        ctx.restore();
-    }
-
-    let lastShapeTime = 0;
-    const shapeInterval = 50; // ms
-
-    function animate(currentTime) {
+    function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const speed = Math.sqrt(mouse.dx*mouse.dx + mouse.dy*mouse.dy);
-        if (speed > 5 && currentTime - lastShapeTime > shapeInterval) {
-            addShape(mouse.x, mouse.y, mouse.dx, mouse.dy);
-            lastShapeTime = currentTime;
-        }
-
-        for (let i = shapes.length - 1; i >= 0; i--) {
-            const shape = shapes[i];
+        // Draw floating shapes
+        for (let shape of shapes) {
             drawShape(shape);
             shape.x += shape.dx;
             shape.y += shape.dy;
             shape.rot += shape.dr;
-            shape.life++;
-            shape.alpha = Math.max(0, 1 - shape.life / 200);
-            
-            shape.dx *= 0.99;
-            shape.dy *= 0.99;
-
-            if (shape.alpha <= 0) {
-                shapes.splice(i, 1);
-            }
+            shape.alpha -= 0.002;
         }
         
+        // Remove faded shapes
+        shapes = shapes.filter(s => s.alpha > 0.06);
+
+        // Draw interactive cursor
         drawCursor();
-        
-        mouse.dx *= 0.9;
-        mouse.dy *= 0.9;
+
+        // If holding mouse down, add shapes at cursor position
+        if (drawing) {
+            addShape(mouse.x, mouse.y);
+        }
 
         requestAnimationFrame(animate);
     }
     
-    animate(0);
-
-    // Navbar hide/show on scroll
-    let lastScrollTop = 0;
-    const navbar = document.querySelector('.navbar');
-    window.addEventListener('scroll', () => {
-        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        if (scrollTop > lastScrollTop && scrollTop > 80) {
-            // Downscroll
-            navbar.style.top = '-80px';
-        } else {
-            // Upscroll
-            navbar.style.top = '0';
-        }
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-    });
-
-    // Scroll-triggered animations for sections
-    const sections = document.querySelectorAll('.content-section');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('animated');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-
-    sections.forEach(section => {
-        observer.observe(section);
-    });
+    animate();
 });
