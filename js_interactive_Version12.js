@@ -66,7 +66,7 @@ function drawCircles() {
 
         p.x += p.vx;
         p.y += p.vy;
-        p.alpha -= 0.01;
+        p.alpha -= 0.005;
         if (p.alpha <= 0) particles.splice(particles.indexOf(p), 1);
     });
 
@@ -129,13 +129,13 @@ canvas.addEventListener('mouseup', e => {
 
 // Explode circle into particles
 function explodeCircle(circle) {
-    for (let i = 0; i < 20; i++) {
-        let angle = (Math.PI * 2 * i) / 20;
-        let speed = Math.random() * 5 + 2;
+    for (let i = 0; i < 40; i++) {
+        let angle = (Math.PI * 2 * i) / 40;
+        let speed = Math.random() * 8 + 3;
         particles.push({
             x: circle.x,
             y: circle.y,
-            size: Math.random() * 4 + 2,
+            size: Math.random() * 6 + 3,
             color: circle.color,
             vx: Math.cos(angle) * speed,
             vy: Math.sin(angle) * speed,

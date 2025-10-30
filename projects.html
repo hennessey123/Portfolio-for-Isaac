@@ -22,7 +22,7 @@
     </style>
 </head>
 <body>
-    <canvas id="background-canvas"></canvas>
+    <canvas id="floating-shapes"></canvas>
 
     <nav class="navbar">
         <div class="nav-container">
@@ -73,6 +73,31 @@
                     <p>A collaborative project to create a platform for food truck vendors and customers.</p>
                     <a href="https://github.com/afraiddocument/Mobilized-Food-Trucks-Project" target="_blank" class="project-link">View on GitHub</a>
                 </div>
+              
+            </div>
+        </section>
+        <section>
+            <div class = "project-grid">
+                <div class = "project-card">
+                    <h3>music theory project</h3>
+                    <p>AI that generates biology to explain theological origins
+                    </p>
+                </div>
+                <div class = "project-grid">
+
+                </div>
+            </div>
+        </section>
+        <section id="project-ideas" class="content-section">
+            <h2>Project Ideas</h2>
+            <p>Add your uncreated project ideas below. Click on each idea to see more details about the development process.</p>
+            <div class="idea-form">
+                <input type="text" id="idea-title" placeholder="Project Idea Title" maxlength="100">
+                <textarea id="idea-description" placeholder="Describe the idea and development process..." rows="4"></textarea>
+                <button id="add-idea-btn">Add Idea</button>
+            </div>
+            <div id="ideas-list" class="project-grid">
+                <!-- Ideas will be added here -->
             </div>
         </section>
     </main>
@@ -82,5 +107,71 @@
     </footer>
 
     <script src="js/interactive.js"></script>
+    <script>
+        // Project Ideas functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const ideasList = document.getElementById('ideas-list');
+            const addIdeaBtn = document.getElementById('add-idea-btn');
+            const ideaTitle = document.getElementById('idea-title');
+            const ideaDescription = document.getElementById('idea-description');
+
+            // Load ideas from localStorage
+            let ideas = JSON.parse(localStorage.getItem('projectIdeas')) || [];
+
+            function saveIdeas() {
+                localStorage.setItem('projectIdeas', JSON.stringify(ideas));
+            }
+
+            function renderIdeas() {
+                ideasList.innerHTML = '';
+                ideas.forEach((idea, index) => {
+                    const ideaCard = document.createElement('div');
+                    ideaCard.className = 'project-card idea-card';
+                    ideaCard.innerHTML = `
+                        <h3>${idea.title}</h3>
+                        <p class="idea-preview">${idea.description.substring(0, 100)}...</p>
+                        <div class="idea-details" style="display: none;">
+                            <p><strong>Development Process:</strong></p>
+                            <p>${idea.description}</p>
+                        </div>
+                        <button class="delete-idea-btn">Delete</button>
+                    `;
+                    ideaCard.addEventListener('click', (e) => {
+                        if (e.target.className !== 'delete-idea-btn') {
+                            const details = ideaCard.querySelector('.idea-details');
+                            const preview = ideaCard.querySelector('.idea-preview');
+                            if (details.style.display === 'none') {
+                                details.style.display = 'block';
+                                preview.style.display = 'none';
+                            } else {
+                                details.style.display = 'none';
+                                preview.style.display = 'block';
+                            }
+                        }
+                    });
+                    ideaCard.querySelector('.delete-idea-btn').addEventListener('click', () => {
+                        ideas.splice(index, 1);
+                        saveIdeas();
+                        renderIdeas();
+                    });
+                    ideasList.appendChild(ideaCard);
+                });
+            }
+
+            addIdeaBtn.addEventListener('click', () => {
+                const title = ideaTitle.value.trim();
+                const description = ideaDescription.value.trim();
+                if (title && description) {
+                    ideas.push({ title, description });
+                    saveIdeas();
+                    renderIdeas();
+                    ideaTitle.value = '';
+                    ideaDescription.value = '';
+                }
+            });
+
+            renderIdeas();
+        });
+    </script>
 </body>
 </html>
