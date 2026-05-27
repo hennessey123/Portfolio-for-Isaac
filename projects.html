@@ -77,16 +77,31 @@
             </div>
         </section>
         
-        <section id="project-ideas" class="content-section">
-            <h2>Project Ideas</h2>
-            <p>Add your uncreated project ideas below. Click on each idea to see more details about the development process.</p>
-            <div class="idea-form">
-                <input type="text" id="idea-title" placeholder="Project Idea Title" maxlength="100">
-                <textarea id="idea-description" placeholder="Describe the idea and development process..." rows="4"></textarea>
-                <button id="add-idea-btn">Add Idea</button>
-            </div>
-            <div id="ideas-list" class="project-grid">
-                <!-- Ideas will be added here -->
+        <section id="gamification" class="content-section animated">
+            <h2>Player Progress</h2>
+            <p>Earn XP for exploring projects — collect badges and level up.</p>
+            <div class="gamification-panel">
+                <div class="xp-bar">
+                    <div class="xp-info">
+                        <span id="xp-count">XP: 0</span>
+                        <span id="level-count">Level: 1</span>
+                    </div>
+                    <div class="progress">
+                        <div id="xp-progress" class="progress-fill" style="width: 10%;"></div>
+                    </div>
+                </div>
+                <div class="badges">
+                    <h3>Badges</h3>
+                    <div id="badges-list" class="badge-list">
+                        <div class="badge locked" data-badge="first-view">First View</div>
+                        <div class="badge locked" data-badge="explorer">Explorer</div>
+                        <div class="badge locked" data-badge="collector">Collector</div>
+                    </div>
+                </div>
+                <div class="gamify-actions">
+                    <button id="earn-xp-btn" class="project-link">Earn 10 XP</button>
+                    <button id="claim-badge-btn" class="project-link">Claim Badge</button>
+                </div>
             </div>
         </section>
     </main>
@@ -97,69 +112,89 @@
 
     <script src="js/interactive.js"></script>
     <script>
-        // Project Ideas functionality
+        // Gamification: XP, Level, Badges
         document.addEventListener('DOMContentLoaded', () => {
-            const ideasList = document.getElementById('ideas-list');
-            const addIdeaBtn = document.getElementById('add-idea-btn');
-            const ideaTitle = document.getElementById('idea-title');
-            const ideaDescription = document.getElementById('idea-description');
+            const XP_KEY = 'portfolio_xp';
+            const LEVEL_KEY = 'portfolio_level';
+            const BADGES_KEY = 'portfolio_badges';
 
-            // Load ideas from localStorage
-            let ideas = JSON.parse(localStorage.getItem('projectIdeas')) || [];
+            const xpCount = document.getElementById('xp-count');
+            const levelCount = document.getElementById('level-count');
+            const xpProgress = document.getElementById('xp-progress');
+            const badgesList = document.getElementById('badges-list');
 
-            function saveIdeas() {
-                localStorage.setItem('projectIdeas', JSON.stringify(ideas));
+            function getXP() { return parseInt(localStorage.getItem(XP_KEY)) || 0; }
+            function getLevel() { return parseInt(localStorage.getItem(LEVEL_KEY)) || 1; }
+            function getBadges() { return JSON.parse(localStorage.getItem(BADGES_KEY)) || {}; }
+
+            function saveState(xp, level, badges) {
+                localStorage.setItem(XP_KEY, xp);
+                localStorage.setItem(LEVEL_KEY, level);
+                localStorage.setItem(BADGES_KEY, JSON.stringify(badges));
             }
 
-            function renderIdeas() {
-                ideasList.innerHTML = '';
-                ideas.forEach((idea, index) => {
-                    const ideaCard = document.createElement('div');
-                    ideaCard.className = 'project-card idea-card';
-                    ideaCard.innerHTML = `
-                        <h3>${idea.title}</h3>
-                        <p class="idea-preview">${idea.description.substring(0, 100)}...</p>
-                        <div class="idea-details" style="display: none;">
-                            <p><strong>Development Process:</strong></p>
-                            <p>${idea.description}</p>
-                        </div>
-                        <button class="delete-idea-btn">Delete</button>
-                    `;
-                    ideaCard.addEventListener('click', (e) => {
-                        if (e.target.className !== 'delete-idea-btn') {
-                            const details = ideaCard.querySelector('.idea-details');
-                            const preview = ideaCard.querySelector('.idea-preview');
-                            if (details.style.display === 'none') {
-                                details.style.display = 'block';
-                                preview.style.display = 'none';
-                            } else {
-                                details.style.display = 'none';
-                                preview.style.display = 'block';
-                            }
-                        }
-                    });
-                    ideaCard.querySelector('.delete-idea-btn').addEventListener('click', () => {
-                        ideas.splice(index, 1);
-                        saveIdeas();
-                        renderIdeas();
-                    });
-                    ideasList.appendChild(ideaCard);
+            function updateUI() {
+                const xp = getXP();
+                const level = getLevel();
+                const levelCap = 100 + (level - 1) * 50;
+                xpCount.textContent = `XP: ${xp}`;
+                levelCount.textContent = `Level: ${level}`;
+                const pct = Math.min(100, Math.round((xp / levelCap) * 100));
+                xpProgress.style.width = `${pct}%`;
+                const badges = getBadges();
+                badgesList.querySelectorAll('.badge').forEach(b => {
+                    const id = b.dataset.badge;
+                    if (badges[id]) {
+                        b.classList.remove('locked');
+                        b.classList.add('unlocked');
+                        b.textContent = `${b.dataset.badge.replace('-', ' ')} ✓`;
+                    } else {
+                        b.classList.remove('unlocked');
+                        b.classList.add('locked');
+                        if (id === 'first-view') b.textContent = 'First View';
+                        if (id === 'explorer') b.textContent = 'Explorer';
+                        if (id === 'collector') b.textContent = 'Collector';
+                    }
                 });
             }
 
-            addIdeaBtn.addEventListener('click', () => {
-                const title = ideaTitle.value.trim();
-                const description = ideaDescription.value.trim();
-                if (title && description) {
-                    ideas.push({ title, description });
-                    saveIdeas();
-                    renderIdeas();
-                    ideaTitle.value = '';
-                    ideaDescription.value = '';
+            function addXP(amount) {
+                let xp = getXP();
+                let level = getLevel();
+                xp += amount;
+                const levelCap = 100 + (level - 1) * 50;
+                while (xp >= levelCap) {
+                    xp -= levelCap;
+                    level += 1;
                 }
+                saveState(xp, level, getBadges());
+                updateUI();
+                const c = document.createElement('span');
+                c.className = 'confetti';
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 1200);
+            }
+
+            document.getElementById('earn-xp-btn').addEventListener('click', () => addXP(10));
+            document.getElementById('claim-badge-btn').addEventListener('click', () => {
+                const badges = getBadges();
+                if (!badges.first-view) badges.first-view = Date.now();
+                else if (!badges.explorer) badges.explorer = Date.now();
+                else if (!badges.collector) badges.collector = Date.now();
+                saveState(getXP(), getLevel(), badges);
+                updateUI();
             });
 
-            renderIdeas();
+            const badges = getBadges();
+            if (!badges['first-view']) {
+                badges['first-view'] = Date.now();
+                saveState(getXP(), getLevel(), badges);
+            }
+            updateUI();
+
+            document.querySelectorAll('.project-link').forEach(link => {
+                link.addEventListener('click', () => addXP(15));
+            });
         });
     </script>
 </body>
