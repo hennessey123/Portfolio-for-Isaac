@@ -1,11 +1,11 @@
 :root {
-  --bg-color: #0a0a0a;
-  --primary-color: #ffffff;
-  --secondary-color: #b0b0b0;
-  --accent-color: #007bff;
-  --card-bg-color: #1a1a1a;
-  --card-hover-bg-color: #2a2a2a;
-  --shadow-color: rgba(0, 123, 255, 0.2);
+  --bg-color: #f6f7fb;
+  --primary-color: #0b1220;
+  --secondary-color: #5b6770;
+  --accent-color: #2563eb;
+  --card-bg-color: #ffffff;
+  --card-hover-bg-color: #f1f5f9;
+  --shadow-color: rgba(37, 99, 235, 0.12);
   --font-family: "Inter", sans-serif;
 }
 
@@ -37,7 +37,7 @@ body {
 }
 
 .navbar {
-  background-color: rgba(10, 10, 10, 0.8);
+  background-color: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   padding: 1rem 2rem;
@@ -45,7 +45,7 @@ body {
   width: 100%;
   top: 0;
   z-index: 1000;
-  border-bottom: 1px solid var(--card-bg-color);
+  border-bottom: 1px solid rgba(11,18,32,0.04);
   transition: top 0.3s ease-in-out;
 }
 
@@ -319,7 +319,7 @@ main {
 }
 
 .project-link:hover {
-  background-color: #0056b3;
+  background-color: #1e40af;
   transform: scale(1.05);
 }
 
@@ -349,7 +349,7 @@ main {
 }
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-color), #00d4ff);
+  background: linear-gradient(90deg, var(--accent-color), #60a5fa);
   width: 0%;
   transition: width 0.6s ease;
 }
@@ -371,8 +371,8 @@ main {
   border: 1px dashed rgba(255, 255, 255, 0.03);
 }
 .badge.unlocked {
-  background: linear-gradient(90deg, #ffd166, #ff6b6b);
-  color: #0a0a0a;
+  background: linear-gradient(90deg, #60a5fa, var(--accent-color));
+  color: var(--primary-color);
   border: none;
   transform: scale(1.03);
 }
@@ -586,7 +586,7 @@ main {
     top: 100%;
     left: 0;
     width: 100%;
-    background-color: rgba(10, 10, 10, 0.9);
+    background-color: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(10px);
     padding: 1rem 0;
   }
