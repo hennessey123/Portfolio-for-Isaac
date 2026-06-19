@@ -13,6 +13,52 @@
             text-align: center;
         }
 
+        #game-container.fullscreen-mode {
+            position: fixed;
+            inset: 0;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        #game-container.fullscreen-mode #gameCanvas {
+            flex: 1;
+            width: 100% !important;
+            max-width: none;
+            border-radius: 0;
+            margin: 0;
+        }
+
+        #game-container.fullscreen-mode .game-ui,
+        #game-container.fullscreen-mode .progress-container,
+        #game-container.fullscreen-mode .controls {
+            display: none;
+        }
+
+        #game-container.fullscreen-mode .button-group {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            margin: 0;
+            gap: 0.5rem;
+        }
+
+        #game-container.fullscreen-mode #gameStatus {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
         #gameCanvas {
             background: linear-gradient(180deg, #87ceeb 0%, #e0f6ff 50%, #ffeb99 100%);
             border: 3px solid var(--accent-color);
@@ -207,7 +253,7 @@
         <header class="hero">
             <div class="hero-content">
                 <h1>BaseRunner</h1>
-                <p class="subtitle">Catch the balls, avoid the bombs. Level up your skills!</p>
+                <p class="subtitle">Catch falling birds, dodge red threats, aim your bombs!</p>
             </div>
         </header>
 
@@ -240,34 +286,35 @@
             </div>
 
             <div class="game-status status-info" id="gameStatus">
-                Click "Start Game" to begin • Use ← → to move • SPACE to jump
+                Click "Start Game" to begin • Use ← → ↑ ↓ to move & aim • SPACE to throw bomb
             </div>
 
             <div class="button-group">
                 <button class="game-btn" id="startBtn">Start Game</button>
                 <button class="game-btn music-toggle" id="musicBtn">🔊 Music</button>
+                <button class="game-btn" id="fullscreenBtn">⛶ Fullscreen</button>
             </div>
 
             <div class="controls">
                 <h3>How to Play</h3>
                 <div class="control-item">
-                    <span>Move Left/Right</span>
-                    <span class="key">← →</span>
+                    <span>Move</span>
+                    <span class="key">← → ↑ ↓</span>
                 </div>
                 <div class="control-item">
-                    <span>Jump (Dodge)</span>
-                    <span class="key">SPACE</span>
+                    <span>Aim Bomb Direction</span>
+                    <span class="key">← → ↑ ↓</span>
                 </div>
                 <div class="control-item">
                     <span>Throw Bomb</span>
-                    <span class="key">N</span>
+                    <span class="key">SPACE</span>
                 </div>
                 <div class="control-item">
                     <span>Spawn Ball</span>
                     <span class="key">B</span>
                 </div>
                 <div style="margin-top: 1rem; font-style: italic; color: var(--secondary-color);">
-                    Catch balls to earn points! Hit balls with bombs to destroy them!
+                    Catch falling birds! They land as fast red dots. Throw directional bombs to destroy them!
                 </div>
             </div>
         </div>

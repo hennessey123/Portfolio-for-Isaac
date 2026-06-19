@@ -1,39 +1,59 @@
 // ============================================
-// BaseRunner Game - JavaScript Port
+// BaseRunner Game
 // ============================================
 
 class Ball {
-    constructor(x, y) {
+    constructor(x, y, canvasWidth, canvasHeight) {
         this.x = x;
         this.y = y;
-        this.dx = 2;
-        this.dy = Math.random() * 2 - 1;
+        this.canvasWidth = canvasWidth;
+        this.canvasHeight = canvasHeight;
+        this.dx = (1.5 + Math.random() * 1.5) * (Math.random() < 0.5 ? 1 : -1);
+        this.dy = 0;
         this.radius = 15;
-        this.sideRight = true;
+        this.sideRight = this.dx > 0;
         this.hit = false;
         this.color = '#ff6b6b';
+        this.gravity = 0.04 + Math.random() * 0.06; // small random gravity per ball
+        this.onGround = false;
+        this.floatTimer = Math.random() * 120; // random delay before starting to fall
     }
 
     move() {
-        if (this.sideRight) {
-            this.x += this.dx;
-        } else {
-            this.x -= this.dx;
-        }
-        this.y += Math.cos(this.x * 0.05) * 0.5;
+        // Horizontal bird-like movement
+        this.x += this.dx;
 
         // Bounce off walls
-        if (this.x > canvas.width) {
-            this.sideRight = false;
-            this.x = canvas.width;
-        } else if (this.x < 0) {
-            this.sideRight = true;
-            this.x = 0;
+        if (this.x > this.canvasWidth - this.radius) {
+            this.dx *= -1;
+            this.x = this.canvasWidth - this.radius;
+        } else if (this.x < this.radius) {
+            this.dx *= -1;
+            this.x = this.radius;
         }
 
-        // Bounce off top/bottom
-        if (this.y < 0) this.y = 0;
-        if (this.y > canvas.height) this.hit = true;
+        // Delay falling randomly, then apply gravity
+        if (this.floatTimer > 0) {
+            this.floatTimer--;
+            // Gentle vertical drift while floating
+            this.y += Math.sin(this.x * 0.02) * 0.3;
+        } else {
+            this.dy += this.gravity;
+            this.y += this.dy;
+        }
+
+        // Clamp to top
+        if (this.y < this.radius) {
+            this.y = this.radius;
+            this.dy = 0;
+        }
+
+        // Hit ground
+        if (this.y >= this.canvasHeight - this.radius) {
+            this.onGround = true;
+            this.y = this.canvasHeight - this.radius;
+            this.dy = 0;
+        }
     }
 
     draw(ctx) {
@@ -42,7 +62,6 @@ class Ball {
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Add shine effect
         ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
         ctx.beginPath();
         ctx.arc(this.x - 5, this.y - 5, 5, 0, Math.PI * 2);
@@ -52,16 +71,18 @@ class Ball {
     collidesWith(x, y, radius) {
         const dx = this.x - x;
         const dy = this.y - y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        return distance < this.radius + radius;
+        return Math.sqrt(dx * dx + dy * dy) < this.radius + radius;
     }
 }
 
 class Bomb {
-    constructor(x, y) {
+    constructor(x, y, dirX = 0, dirY = 1) {
         this.x = x;
         this.y = y;
-        this.dy = 3;
+        const speed = 7;
+        const len = Math.sqrt(dirX * dirX + dirY * dirY) || 1;
+        this.vx = (dirX / len) * speed;
+        this.vy = (dirY / len) * speed;
         this.radius = 12;
         this.explode = false;
         this.explodeRadius = 0;
@@ -71,23 +92,63 @@ class Bomb {
 
     move() {
         if (!this.explode) {
-            this.y += this.dy;
+            this.vy += 0.15; // arc gravity
+            this.x += this.vx;
+            this.y += this.vy;
+        }
+    }
 
-            if (this.y > canvas.height) {
-                this.explode = true;
+    triggerExplosion() {
+        this.explode = true;
+    }
+
+    checkCollisionWithBalls(balls) {
+        for (const ball of balls) {
+            const dx = this.x - ball.x;
+            const dy = this.y - ball.y;
+            if (Math.sqrt(dx * dx + dy * dy) < this.radius + ball.radius) {
+                this.triggerExplosion();
+                return true;
             }
         }
+        return false;
+    }
+
+    checkCollisionWithRedDots(redDots) {
+        for (const dot of redDots) {
+            const dx = this.x - dot.x;
+            const dy = this.y - dot.y;
+            if (Math.sqrt(dx * dx + dy * dy) < this.radius + dot.radius) {
+                this.triggerExplosion();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    checkGroundCollision(canvasHeight) {
+        if (this.y + this.radius >= canvasHeight) {
+            this.triggerExplosion();
+            return true;
+        }
+        return false;
+    }
+
+    isExplosionDone() {
+        return this.explodeRadius > this.maxExplodeRadius;
+    }
+
+    getExplosionBounds() {
+        return { x: this.x, y: this.y, radius: this.explodeRadius };
     }
 
     draw(ctx) {
         if (!this.explode) {
-            // Draw bomb
             ctx.fillStyle = this.color;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
             ctx.fill();
 
-            // Draw fuse
             ctx.strokeStyle = '#8b4513';
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -95,19 +156,18 @@ class Bomb {
             ctx.lineTo(this.x, this.y - this.radius - 10);
             ctx.stroke();
 
-            // Draw spark
             ctx.fillStyle = '#ffaa00';
             ctx.beginPath();
             ctx.arc(this.x, this.y - this.radius - 10, 2, 0, Math.PI * 2);
             ctx.fill();
         } else {
-            // Draw explosion
-            ctx.fillStyle = `rgba(255, 100, 0, ${1 - (this.explodeRadius / this.maxExplodeRadius)})`;
+            const alpha = 1 - this.explodeRadius / this.maxExplodeRadius;
+            ctx.fillStyle = `rgba(255, 100, 0, ${alpha})`;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.explodeRadius, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.strokeStyle = `rgba(255, 200, 0, ${1 - (this.explodeRadius / this.maxExplodeRadius)})`;
+            ctx.strokeStyle = `rgba(255, 200, 0, ${alpha})`;
             ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.explodeRadius, 0, Math.PI * 2);
@@ -116,81 +176,106 @@ class Bomb {
             this.explodeRadius += 3;
         }
     }
-
-    isExplosionDone() {
-        return this.explodeRadius > this.maxExplodeRadius;
-    }
-
-    getExplosionBounds() {
-        return {
-            x: this.x,
-            y: this.y,
-            radius: this.explodeRadius
-        };
-    }
 }
 
-class Pitcher {
+class RedDot {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.width = 40;
-        this.height = 60;
-        this.dy = 0;
-        this.jumpPower = -15;
-        this.gravity = 0.5;
-        this.groundY = y;
-        this.jumping = false;
-        this.color = '#2ecc71';
+        this.radius = 8;
+        this.color = '#ff2200';
+        this.speed = 1.8;
     }
 
-    moveLeft() {
-        this.x = Math.max(0, this.x - 20);
-    }
-
-    moveRight() {
-        this.x = Math.min(canvas.width - this.width, this.x + 20);
-    }
-
-    jump() {
-        if (!this.jumping) {
-            this.dy = this.jumpPower;
-            this.jumping = true;
-        }
-    }
-
-    update() {
-        // Apply gravity
-        this.dy += this.gravity;
-        this.y += this.dy;
-
-        // Ground collision
-        if (this.y >= this.groundY) {
-            this.y = this.groundY;
-            this.dy = 0;
-            this.jumping = false;
+    moveTowardPlayer(playerX, playerY) {
+        const dx = playerX - this.x;
+        const dy = playerY - this.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > 0) {
+            this.x += (dx / dist) * this.speed;
+            this.y += (dy / dist) * this.speed;
         }
     }
 
     draw(ctx) {
-        // Body
+        ctx.fillStyle = 'rgba(255, 34, 0, 0.3)';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius + 4, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+    }
 
-        // Head
-        ctx.fillStyle = '#ffdbac';
-        ctx.beginPath();
-        ctx.arc(this.x + this.width / 2, this.y - 10, 12, 0, Math.PI * 2);
-        ctx.fill();
+    collidesWith(x, y, radius) {
+        const dx = this.x - x;
+        const dy = this.y - y;
+        return Math.sqrt(dx * dx + dy * dy) < this.radius + radius;
+    }
+}
 
-        // Eyes
-        ctx.fillStyle = '#000000';
+class Pitcher {
+    constructor(x, y, canvasWidth, canvasHeight) {
+        this.x = x;
+        this.y = y;
+        this.width = 60;
+        this.height = 60;
+        this.color = '#2ecc71';
+        this.canvasWidth = canvasWidth;
+        this.canvasHeight = canvasHeight;
+        this.ammunition = 10;
+        this.maxAmmunition = 10;
+        this.reloadTimer = 0;
+        this.reloadDelay = 2000;
+        this.bombDirX = 0;
+        this.bombDirY = 1;
+        this.speed = 4;
+        this.img = new Image();
+        this.img.src = 'trala.jpg';
+    }
+
+    moveLeft()  { this.x = Math.max(0, this.x - this.speed); }
+    moveRight() { this.x = Math.min(this.canvasWidth - this.width, this.x + this.speed); }
+    moveUp()    { this.y = Math.max(0, this.y - this.speed); }
+    moveDown()  { this.y = Math.min(this.canvasHeight - this.height, this.y + this.speed); }
+
+    setBombDirection(dirX, dirY) {
+        const len = Math.sqrt(dirX * dirX + dirY * dirY);
+        if (len > 0) {
+            this.bombDirX = dirX / len;
+            this.bombDirY = dirY / len;
+        }
+    }
+
+    update() {
+        if (this.ammunition === 0 && this.reloadTimer < this.reloadDelay) {
+            this.reloadTimer += 16;
+            if (this.reloadTimer >= this.reloadDelay) {
+                this.ammunition = this.maxAmmunition;
+                this.reloadTimer = 0;
+            }
+        }
+    }
+
+    draw(ctx) {
+        if (this.img.complete) {
+            ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+        } else {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+
+        // Draw aim direction arrow
+        const cx = this.x + this.width / 2;
+        const cy = this.y + this.height / 2;
+        ctx.strokeStyle = '#ffff00';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.arc(this.x + this.width / 2 - 5, this.y - 12, 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(this.x + this.width / 2 + 5, this.y - 12, 2, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + this.bombDirX * 25, cy + this.bombDirY * 25);
+        ctx.stroke();
     }
 
     collidesWith(x, y, radius) {
@@ -200,10 +285,6 @@ class Pitcher {
             y < this.y + this.height &&
             y + radius > this.y
         );
-    }
-
-    getBounds() {
-        return { x: this.x, y: this.y, width: this.width, height: this.height };
     }
 }
 
@@ -218,10 +299,13 @@ class BaseRunnerGame {
 
         this.pitcher = new Pitcher(
             this.canvas.width / 2 - 20,
-            this.canvas.height - 80
+            this.canvas.height - 80,
+            this.canvas.width,
+            this.canvas.height
         );
 
         this.balls = [];
+        this.redDots = [];
         this.bombs = [];
         this.score = 0;
         this.level = 1;
@@ -229,10 +313,13 @@ class BaseRunnerGame {
         this.gameRunning = false;
         this.ballsCaught = 0;
         this.ballsPerLevel = 10;
+        this.spawnTimer = 0;
+        this.spawnInterval = 180;
+        this.levelUpTimer = 0; // frames between ball spawns
 
         this.keys = {};
         this.setupEventListeners();
-
+        this.setupFullscreen();
         this.gameLoop();
     }
 
@@ -242,22 +329,20 @@ class BaseRunnerGame {
 
             if (e.key === 'b' || e.key === 'B') {
                 if (this.gameRunning) {
-                    this.balls.push(
-                        new Ball(Math.random() * this.canvas.width, 50)
-                    );
-                }
-            }
-
-            if (e.key === 'n' || e.key === 'N') {
-                if (this.gameRunning) {
-                    this.bombs.push(new Bomb(this.pitcher.x + 20, this.pitcher.y));
+                    this.spawnBall();
                 }
             }
 
             if (e.key === ' ') {
                 e.preventDefault();
-                if (this.gameRunning) {
-                    this.pitcher.jump();
+                if (this.gameRunning && this.pitcher.ammunition > 0) {
+                    this.bombs.push(new Bomb(
+                        this.pitcher.x + this.pitcher.width / 2,
+                        this.pitcher.y + this.pitcher.height / 2,
+                        this.pitcher.bombDirX,
+                        this.pitcher.bombDirY
+                    ));
+                    this.pitcher.ammunition--;
                 }
             }
         });
@@ -266,23 +351,61 @@ class BaseRunnerGame {
             this.keys[e.key] = false;
         });
 
-        document.getElementById('startBtn').addEventListener('click', () => {
-            this.start();
+        document.getElementById('startBtn').addEventListener('click', () => this.start());
+        document.getElementById('musicBtn').addEventListener('click', () => this.toggleMusic());
+    }
+
+    setupFullscreen() {
+        const btn = document.getElementById('fullscreenBtn');
+        const container = document.getElementById('game-container');
+
+        btn.addEventListener('click', () => {
+            container.classList.toggle('fullscreen-mode');
+            const isFullscreen = container.classList.contains('fullscreen-mode');
+            btn.textContent = isFullscreen ? '✕ Exit Fullscreen' : '⛶ Fullscreen';
+            this.resizeCanvas();
         });
 
-        document.getElementById('musicBtn').addEventListener('click', () => {
-            this.toggleMusic();
+        window.addEventListener('resize', () => {
+            if (document.getElementById('game-container').classList.contains('fullscreen-mode')) {
+                this.resizeCanvas();
+            }
         });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                container.classList.remove('fullscreen-mode');
+                btn.textContent = '⛶ Fullscreen';
+                this.resizeCanvas();
+            }
+        });
+    }
+
+    resizeCanvas() {
+        const container = document.getElementById('game-container');
+        const isFullscreen = container.classList.contains('fullscreen-mode');
+
+        if (isFullscreen) {
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight - 50;
+        } else {
+            this.canvas.width = 800;
+            this.canvas.height = 600;
+        }
+
+        // Update pitcher bounds
+        this.pitcher.canvasWidth = this.canvas.width;
+        this.pitcher.canvasHeight = this.canvas.height;
+        // Clamp pitcher position inside new bounds
+        this.pitcher.x = Math.min(this.pitcher.x, this.canvas.width - this.pitcher.width);
+        this.pitcher.y = Math.min(this.pitcher.y, this.canvas.height - this.pitcher.height);
     }
 
     toggleMusic() {
         const audio = document.getElementById('bgMusic');
         const btn = document.getElementById('musicBtn');
-
         if (audio.paused) {
-            audio.play().catch(() => {
-                console.log('Music play failed - no audio source provided');
-            });
+            audio.play().catch(() => {});
             btn.classList.add('playing');
         } else {
             audio.pause();
@@ -297,56 +420,71 @@ class BaseRunnerGame {
         this.lives = 3;
         this.ballsCaught = 0;
         this.balls = [];
+        this.redDots = [];
         this.bombs = [];
+        this.spawnTimer = 0;
+        this.levelUpTimer = 0;
         this.pitcher = new Pitcher(
             this.canvas.width / 2 - 20,
-            this.canvas.height - 80
+            this.canvas.height - 80,
+            this.canvas.width,
+            this.canvas.height
         );
 
         document.getElementById('startBtn').textContent = 'Game Running...';
         document.getElementById('startBtn').disabled = true;
 
-        // Spawn initial balls
+        // Spawn a couple balls immediately
+        this.spawnBall();
         this.spawnBall();
     }
 
     spawnBall() {
-        if (this.gameRunning && this.balls.length < 3 + this.level) {
-            setTimeout(() => {
-                this.balls.push(
-                    new Ball(
-                        Math.random() > 0.5 ? 0 : this.canvas.width,
-                        Math.random() * (this.canvas.height - 150) + 50
-                    )
-                );
-                this.spawnBall();
-            }, 2000 / this.level);
-        }
+        const x = Math.random() * (this.canvas.width - 60) + 30;
+        const ball = new Ball(x, 30, this.canvas.width, this.canvas.height);
+        // Scale ball speed with level
+        ball.dx *= 1 + (this.level - 1) * 0.15;
+        ball.gravity *= 1 + (this.level - 1) * 0.1;
+        this.balls.push(ball);
     }
 
     update() {
         if (!this.gameRunning) return;
 
-        // Handle pitcher input
-        if (this.keys['ArrowLeft'] || this.keys['a'] || this.keys['A']) {
-            this.pitcher.moveLeft();
-        }
-        if (this.keys['ArrowRight'] || this.keys['d'] || this.keys['D']) {
-            this.pitcher.moveRight();
-        }
+        // Movement
+        if (this.keys['ArrowLeft']  || this.keys['a'] || this.keys['A']) this.pitcher.moveLeft();
+        if (this.keys['ArrowRight'] || this.keys['d'] || this.keys['D']) this.pitcher.moveRight();
+        if (this.keys['ArrowUp']    || this.keys['w'] || this.keys['W']) this.pitcher.moveUp();
+        if (this.keys['ArrowDown']  || this.keys['s'] || this.keys['S']) this.pitcher.moveDown();
 
-        // Update pitcher
+        // Aim direction from arrow keys
+        let dirX = 0, dirY = 0;
+        if (this.keys['ArrowLeft'])  dirX = -1;
+        if (this.keys['ArrowRight']) dirX =  1;
+        if (this.keys['ArrowUp'])    dirY = -1;
+        if (this.keys['ArrowDown'])  dirY =  1;
+        if (dirX !== 0 || dirY !== 0) this.pitcher.setBombDirection(dirX, dirY);
+
         this.pitcher.update();
+
+        // Random ball spawning over time
+        this.spawnTimer++;
+        const interval = Math.max(60, this.spawnInterval - this.level * 10);
+        if (this.spawnTimer >= interval && this.balls.length < 3 + this.level) {
+            this.spawnTimer = 0;
+            // Spawn 1-3 balls at once randomly
+            const count = 1 + Math.floor(Math.random() * Math.min(3, this.level));
+            for (let i = 0; i < count; i++) this.spawnBall();
+        }
 
         // Update balls
         this.balls = this.balls.filter((ball) => {
             ball.move();
 
-            // Pitcher catches ball
             if (ball.collidesWith(
-                this.pitcher.x + 20,
-                this.pitcher.y,
-                30
+                this.pitcher.x + this.pitcher.width / 2,
+                this.pitcher.y + this.pitcher.height / 2,
+                28
             )) {
                 this.score += 10;
                 this.ballsCaught++;
@@ -354,48 +492,75 @@ class BaseRunnerGame {
                 this.checkLevelUp();
             }
 
-            // Ball goes off screen
-            if (ball.hit || ball.y > this.canvas.height + 50) {
-                if (!ball.hit) this.lives--;
+            if (ball.onGround && !ball.hit) {
+                const dot = new RedDot(ball.x, ball.y);
+                dot.speed = 1.8 + (this.level - 1) * 0.3; // faster each level
+                this.redDots.push(dot);
+                ball.hit = true;
             }
 
-            return !ball.hit && ball.y < this.canvas.height + 50;
+            return !ball.hit;
+        });
+
+        // Update red dots
+        this.redDots = this.redDots.filter((dot) => {
+            dot.moveTowardPlayer(
+                this.pitcher.x + this.pitcher.width / 2,
+                this.pitcher.y + this.pitcher.height / 2
+            );
+
+            if (dot.collidesWith(
+                this.pitcher.x + this.pitcher.width / 2,
+                this.pitcher.y + this.pitcher.height / 2,
+                22
+            )) {
+                this.lives--;
+                return false;
+            }
+
+            return true;
         });
 
         // Update bombs
         this.bombs = this.bombs.filter((bomb) => {
             bomb.move();
 
-            // Explode collision with balls
-            if (bomb.explode) {
-                const explosion = bomb.getExplosionBounds();
-                this.balls = this.balls.filter((ball) => {
-                    const dx = ball.x - explosion.x;
-                    const dy = ball.y - explosion.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
+            if (!bomb.explode) {
+                bomb.checkCollisionWithBalls(this.balls);
+                bomb.checkCollisionWithRedDots(this.redDots);
+                bomb.checkGroundCollision(this.canvas.height);
+            }
 
-                    if (distance < explosion.radius) {
-                        this.score += 25; // Bonus for destroying with bomb
+            if (bomb.explode) {
+                const exp = bomb.getExplosionBounds();
+                this.balls = this.balls.filter((ball) => {
+                    const dx = ball.x - exp.x, dy = ball.y - exp.y;
+                    if (Math.sqrt(dx * dx + dy * dy) < exp.radius) {
+                        this.score += 25;
                         return false;
                     }
                     return true;
                 });
-
+                this.redDots = this.redDots.filter((dot) => {
+                    const dx = dot.x - exp.x, dy = dot.y - exp.y;
+                    if (Math.sqrt(dx * dx + dy * dy) < exp.radius) {
+                        this.score += 15;
+                        return false;
+                    }
+                    return true;
+                });
                 return !bomb.isExplosionDone();
             }
 
-            return bomb.y < this.canvas.height + 50;
+            return (
+                bomb.x > -50 && bomb.x < this.canvas.width + 50 &&
+                bomb.y < this.canvas.height + 50
+            );
         });
 
-        // Check game over
-        if (this.lives <= 0) {
-            this.gameOver();
-        }
+        if (this.lives <= 0) this.gameOver();
 
-        // Spawn balls based on level
-        if (this.balls.length < 2 + Math.floor(this.level / 2)) {
-            this.spawnBall();
-        }
+        if (this.levelUpTimer > 0) this.levelUpTimer--;
 
         this.updateUI();
     }
@@ -404,15 +569,11 @@ class BaseRunnerGame {
         if (this.ballsCaught % this.ballsPerLevel === 0 && this.ballsCaught > 0) {
             this.level++;
             this.ballsPerLevel = 10 + this.level * 2;
+            this.levelUpTimer = 180; // show banner for 3 seconds
         }
     }
 
     draw() {
-        // Clear canvas
-        this.ctx.fillStyle = '#87ceeb';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // Draw sky gradient
         const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
         gradient.addColorStop(0, '#87ceeb');
         gradient.addColorStop(0.5, '#e0f6ff');
@@ -420,40 +581,47 @@ class BaseRunnerGame {
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Draw sun
         this.ctx.fillStyle = '#ffeb99';
         this.ctx.beginPath();
         this.ctx.arc(750, 50, 40, 0, Math.PI * 2);
         this.ctx.fill();
 
-        // Draw game objects
         this.pitcher.draw(this.ctx);
+        this.balls.forEach((b) => b.draw(this.ctx));
+        this.redDots.forEach((d) => d.draw(this.ctx));
+        this.bombs.forEach((b) => b.draw(this.ctx));
 
-        this.balls.forEach((ball) => {
-            ball.draw(this.ctx);
-        });
+        if (this.levelUpTimer > 0) this.drawLevelUpBanner();
+        if (!this.gameRunning && this.lives <= 0) this.drawGameOverScreen();
+    }
 
-        this.bombs.forEach((bomb) => {
-            bomb.draw(this.ctx);
-        });
-
-        // Draw UI overlays
-        if (!this.gameRunning && this.lives <= 0) {
-            this.drawGameOverScreen();
-        }
+    drawLevelUpBanner() {
+        const alpha = Math.min(1, this.levelUpTimer / 30);
+        const cy = this.canvas.height / 3;
+        this.ctx.save();
+        this.ctx.globalAlpha = alpha;
+        this.ctx.fillStyle = 'rgba(0,0,0,0.55)';
+        this.ctx.fillRect(0, cy - 50, this.canvas.width, 90);
+        this.ctx.fillStyle = '#ffff00';
+        this.ctx.font = `bold ${Math.min(56, this.canvas.width / 14)}px Arial`;
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(`LEVEL ${this.level}!`, this.canvas.width / 2, cy + 10);
+        this.ctx.font = `${Math.min(22, this.canvas.width / 38)}px Arial`;
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillText(
+            `Balls faster • Dots faster • More spawns`,
+            this.canvas.width / 2, cy + 38
+        );
+        this.ctx.restore();
     }
 
     drawGameOverScreen() {
-        // Semi-transparent overlay
         this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // Game Over text
         this.ctx.fillStyle = '#ffffff';
         this.ctx.font = 'bold 48px Arial';
         this.ctx.textAlign = 'center';
         this.ctx.fillText('GAME OVER', this.canvas.width / 2, this.canvas.height / 2 - 40);
-
         this.ctx.font = '24px Arial';
         this.ctx.fillText(`Final Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 2 + 20);
         this.ctx.fillText(`Level: ${this.level}`, this.canvas.width / 2, this.canvas.height / 2 + 60);
@@ -470,7 +638,14 @@ class BaseRunnerGame {
         document.getElementById('progress-text').textContent = `${progress}/${this.ballsPerLevel}`;
 
         if (this.gameRunning) {
-            document.getElementById('gameStatus').textContent = `Level ${this.level} • Catch ${this.ballsPerLevel - progress} more balls to level up!`;
+            let statusText = `Catch ${this.ballsPerLevel - progress} more to level up!`;
+            if (this.pitcher.ammunition === 0) {
+                const t = ((this.pitcher.reloadDelay - this.pitcher.reloadTimer) / 1000).toFixed(1);
+                statusText = `RELOADING ${t}s... • ${statusText}`;
+            } else {
+                statusText = `Ammo: ${this.pitcher.ammunition} • ${statusText}`;
+            }
+            document.getElementById('gameStatus').textContent = statusText;
         }
     }
 
@@ -478,7 +653,7 @@ class BaseRunnerGame {
         this.gameRunning = false;
         document.getElementById('startBtn').textContent = 'Game Over - Start Again';
         document.getElementById('startBtn').disabled = false;
-        document.getElementById('gameStatus').textContent = `Game Over! Final Score: ${this.score} | Level: ${this.level}`;
+        document.getElementById('gameStatus').textContent = `Game Over! Score: ${this.score} | Level: ${this.level}`;
         document.getElementById('gameStatus').classList.add('status-warning');
     }
 
@@ -489,11 +664,6 @@ class BaseRunnerGame {
     }
 }
 
-// ============================================
-// Initialize Game
-// ============================================
-
 window.addEventListener('load', () => {
-    const canvas = document.getElementById('gameCanvas');
-    const game = new BaseRunnerGame('gameCanvas');
+    new BaseRunnerGame('gameCanvas');
 });
