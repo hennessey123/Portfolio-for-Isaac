@@ -237,7 +237,11 @@ class BaseRunnerGame {
     }
 
     setupEventListeners() {
-        document.addEventListener('keydown', (e) => {
+        // Ensure canvas gets focus for keyboard input
+        this.canvas.tabIndex = 1000;
+        this.canvas.focus();
+
+        window.addEventListener('keydown', (e) => {
             this.keys[e.key] = true;
 
             if (e.key === 'b' || e.key === 'B') {
@@ -262,7 +266,7 @@ class BaseRunnerGame {
             }
         });
 
-        document.addEventListener('keyup', (e) => {
+        window.addEventListener('keyup', (e) => {
             this.keys[e.key] = false;
         });
 
