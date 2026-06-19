@@ -93,4 +93,60 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     animate();
+
+    // Matrix Rain Effect Intro
+    const matrixCanvas = document.getElementById('matrix-canvas');
+    if (matrixCanvas) {
+        const mctx = matrixCanvas.getContext('2d');
+        let mWidth, mHeight;
+        let columns = [];
+        let fontSize = 16;
+
+        function initMatrix() {
+            mWidth = matrixCanvas.width = window.innerWidth;
+            mHeight = matrixCanvas.height = window.innerHeight;
+            const cols = Math.floor(mWidth / fontSize);
+            columns = [];
+            for (let x = 0; x < cols; x++) {
+                columns[x] = 1;
+            }
+        }
+        initMatrix();
+        window.addEventListener('resize', initMatrix);
+
+        function drawMatrix() {
+            mctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            mctx.fillRect(0, 0, mWidth, mHeight);
+
+            mctx.fillStyle = '#0F0';
+            mctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < columns.length; i++) {
+                const text = String.fromCharCode(0x30A0 + Math.random() * 96);
+                mctx.fillText(text, i * fontSize, columns[i] * fontSize);
+
+                if (columns[i] * fontSize > mHeight && Math.random() > 0.975) {
+                    columns[i] = 0;
+                }
+                columns[i]++;
+            }
+        }
+
+        const matrixInterval = setInterval(drawMatrix, 33);
+
+        // Fade out the matrix wrapper after 2 seconds
+        setTimeout(() => {
+            const introDiv = document.getElementById('matrix-intro');
+            if (introDiv) {
+                introDiv.classList.add('fade-out');
+            }
+        }, 2000);
+
+        // Stop rendering matrix after it's hidden to save CPU
+        setTimeout(() => {
+            clearInterval(matrixInterval);
+            const overlay = document.getElementById('matrix-intro');
+            if(overlay) overlay.style.display = 'none';
+        }, 3500);
+    }
 });
