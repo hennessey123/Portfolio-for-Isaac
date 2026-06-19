@@ -270,12 +270,16 @@ class BaseRunnerGame {
             this.keys[e.key] = false;
         });
 
-        document.getElementById('startBtn').addEventListener('click', () => {
+        document.getElementById('startBtn').addEventListener('click', (e) => {
             this.start();
+            e.target.blur(); // Remove focus from button so spacebar doesn't click it again
+            window.focus();
         });
 
-        document.getElementById('musicBtn').addEventListener('click', () => {
+        document.getElementById('musicBtn').addEventListener('click', (e) => {
             this.toggleMusic();
+            e.target.blur();
+            window.focus();
         });
     }
 
