@@ -318,8 +318,10 @@ class BaseRunnerGame {
         this.levelUpTimer = 0; // frames between ball spawns
 
         this.keys = {};
+        this.tiltActive = false;
         this.setupEventListeners();
         this.setupFullscreen();
+        this.setupMobileControls();
         this.gameLoop();
     }
 
@@ -353,6 +355,92 @@ class BaseRunnerGame {
 
         document.getElementById('startBtn').addEventListener('click', () => this.start());
         document.getElementById('musicBtn').addEventListener('click', () => this.toggleMusic());
+    }
+
+    setupMobileControls() {
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+        if (isMobile) {
+            document.getElementById('mobile-hint').style.display = 'block';
+        }
+
+        // iOS 13+ requires a user gesture to access DeviceOrientation
+        const tiltBtn = document.getElementById('tiltBtn');
+        if (typeof DeviceOrientationEvent !== 'undefined' &&
+            typeof DeviceOrientationEvent.requestPermission === 'function') {
+            // iOS 13+
+            tiltBtn.style.display = 'inline-block';
+            tiltBtn.addEventListener('click', () => {
+                DeviceOrientationEvent.requestPermission().then((response) => {
+                    if (response === 'granted') {
+                        this.startTiltControls();
+                        tiltBtn.textContent = '✓ Tilt On';
+                        tiltBtn.disabled = true;
+                    }
+                }).catch(() => {
+                    tiltBtn.textContent = '✗ Denied';
+                });
+            });
+        } else if (isMobile) {
+            // Android / older iOS — no permission needed
+            this.startTiltControls();
+            tiltBtn.style.display = 'none';
+        }
+
+        // Tap canvas to shoot in direction of tap relative to player
+        this.canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (!this.gameRunning) return;
+
+            // Multi-touch: each touch fires a shot
+            for (const touch of e.changedTouches) {
+                if (this.pitcher.ammunition <= 0) break;
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = this.canvas.width / rect.width;
+                const scaleY = this.canvas.height / rect.height;
+                const tx = (touch.clientX - rect.left) * scaleX;
+                const ty = (touch.clientY - rect.top) * scaleY;
+                const px = this.pitcher.x + this.pitcher.width / 2;
+                const py = this.pitcher.y + this.pitcher.height / 2;
+                const dirX = tx - px;
+                const dirY = ty - py;
+                this.pitcher.setBombDirection(dirX, dirY);
+                this.bombs.push(new Bomb(px, py, dirX, dirY));
+                this.pitcher.ammunition--;
+            }
+        }, { passive: false });
+
+        // Prevent page scroll while playing
+        this.canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+    }
+
+    startTiltControls() {
+        this.tiltActive = true;
+        const DEAD_ZONE = 4;
+        const SENSITIVITY = 0.5;
+
+        window.addEventListener('deviceorientation', (e) => {
+            if (!this.gameRunning || !this.tiltActive) return;
+
+            const gamma = e.gamma ?? 0; // left-right: negative = left
+            const beta  = e.beta  ?? 0; // front-back: ~45-90° typical hold
+
+            if (Math.abs(gamma) > DEAD_ZONE) {
+                this.pitcher.x += gamma * SENSITIVITY;
+                this.pitcher.x = Math.max(0, Math.min(
+                    this.canvas.width - this.pitcher.width, this.pitcher.x
+                ));
+            }
+
+            // Normalize beta around 60° (natural phone hold angle)
+            const adjustedBeta = beta - 60;
+            if (Math.abs(adjustedBeta) > DEAD_ZONE) {
+                this.pitcher.y += adjustedBeta * SENSITIVITY;
+                this.pitcher.y = Math.max(0, Math.min(
+                    this.canvas.height - this.pitcher.height, this.pitcher.y
+                ));
+            }
+        });
     }
 
     setupFullscreen() {
@@ -592,7 +680,24 @@ class BaseRunnerGame {
         this.bombs.forEach((b) => b.draw(this.ctx));
 
         if (this.levelUpTimer > 0) this.drawLevelUpBanner();
+        if (this.tiltActive && this.gameRunning) this.drawMobileHUD();
         if (!this.gameRunning && this.lives <= 0) this.drawGameOverScreen();
+    }
+
+    drawMobileHUD() {
+        const pad = 14;
+        const fSize = Math.max(16, Math.min(22, this.canvas.width / 36));
+        this.ctx.save();
+        this.ctx.font = `bold ${fSize}px Arial`;
+        this.ctx.textAlign = 'left';
+        this.ctx.fillStyle = 'rgba(0,0,0,0.45)';
+        this.ctx.fillRect(0, 0, this.canvas.width, fSize + pad * 2);
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillText(
+            `❤️ ${Math.max(0, this.lives)}   💣 ${this.pitcher.ammunition}/${this.pitcher.maxAmmunition}   ⭐ ${this.score}   Lv ${this.level}`,
+            pad, fSize + pad
+        );
+        this.ctx.restore();
     }
 
     drawLevelUpBanner() {
