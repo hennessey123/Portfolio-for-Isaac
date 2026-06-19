@@ -1,16 +1,16 @@
 :root {
-  --bg-color: #0f141e; /* Deep blueish-black modern background */
-  --primary-color: #ffffff;
-  --secondary-color: #b0b0b0;
-  --accent-color: #e52521; /* Mario Red */
-  --accent-alt: #fbd000; /* Mario Coin Yellow */
-  --accent-green: #43b047; /* Mario Green */
-  --accent-blue: #0047bb; /* Mario Blue */
-  --card-bg-color: rgba(26, 26, 26, 0.6); /* Glassmorphism modern card */
-  --card-hover-bg-color: rgba(42, 42, 42, 0.8);
-  --shadow-color: rgba(229, 37, 33, 0.3); /* Red glow shadow */
-  --font-family: "Inter", sans-serif;
-  --mario-font: "Press Start 2P", system-ui;
+  --bg-color: #050505; /* Black */
+  --primary-color: #00ff41; /* Hacker Green */
+  --secondary-color: #008f11;
+  --accent-color: #00ff41; 
+  --accent-alt: #003b00; 
+  --accent-green: #00ff41; 
+  --accent-blue: #003b00; 
+  --card-bg-color: rgba(0, 20, 0, 0.8); 
+  --card-hover-bg-color: rgba(0, 40, 0, 0.9);
+  --shadow-color: rgba(0, 255, 65, 0.4); 
+  --font-family: monospace;
+  --mario-font: monospace;
 }
 
 html {
@@ -38,6 +38,67 @@ body {
   width: 100%;
   height: 100%;
   z-index: -1;
+}
+
+#matrix-folder-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  perspective: 2000px;
+  pointer-events: none; /* Let clicks pass through after opened */
+}
+
+.folder-cover {
+  width: 100%;
+  height: 100%;
+  background-color: #050505;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: left center;
+  transition: transform 2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  box-shadow: inset -10px 0 30px rgba(0, 255, 65, 0.2);
+  border-right: 5px solid var(--primary-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.folder-cover.open {
+  transform: rotateY(-110deg);
+}
+
+#matrix-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.folder-label {
+  position: relative;
+  z-index: 2;
+  color: var(--primary-color);
+  font-family: monospace;
+  font-size: 4vw;
+  text-shadow: 0 0 10px var(--primary-color);
+  border: 3px solid var(--primary-color);
+  padding: 1rem 3rem;
+  background: rgba(0,0,0,0.9);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 10px var(--primary-color); }
+  50% { box-shadow: 0 0 30px var(--primary-color); }
+  100% { box-shadow: 0 0 10px var(--primary-color); }
 }
 
 .navbar {
