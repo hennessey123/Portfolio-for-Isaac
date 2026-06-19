@@ -63,30 +63,11 @@
         </section>
         
         <section id="gamification" class="content-section animated">
-            <h2>Player Progress</h2>
-            <p>Earn XP for exploring projects — collect badges and level up.</p>
+            <h2>Crashout Wednesday</h2>
+            <p>catch the bombs before they chase you</p>
             <div class="gamification-panel">
-                <div class="xp-bar">
-                    <div class="xp-info">
-                        <span id="xp-count">XP: 0</span>
-                        <span id="level-count">Level: 1</span>
-                    </div>
-                    <div class="progress">
-                        <div id="xp-progress" class="progress-fill" style="width: 10%;"></div>
-                    </div>
-                </div>
-                <div class="badges">
-                    <h3>Badges</h3>
-                    <div id="badges-list" class="badge-list">
-                        <div class="badge locked" data-badge="first-view">First View</div>
-                        <div class="badge locked" data-badge="explorer">Explorer</div>
-                        <div class="badge locked" data-badge="collector">Collector</div>
-                    </div>
-                </div>
-                <div class="gamify-actions">
-                    <button id="earn-xp-btn" class="project-link">Earn 10 XP</button>
-                    <button id="claim-badge-btn" class="project-link">Claim Badge</button>
-                </div>
+               <a href="baserunner.html">Play Now</a>
+               
             </div>
         </section>
     </main>
@@ -163,9 +144,9 @@
             document.getElementById('earn-xp-btn').addEventListener('click', () => addXP(10));
             document.getElementById('claim-badge-btn').addEventListener('click', () => {
                 const badges = getBadges();
-                if (!badges.first-view) badges.first-view = Date.now();
-                else if (!badges.explorer) badges.explorer = Date.now();
-                else if (!badges.collector) badges.collector = Date.now();
+                if (!badges['first-view']) badges['first-view'] = Date.now();
+                else if (!badges['explorer']) badges['explorer'] = Date.now();
+                else if (!badges['collector']) badges['collector'] = Date.now();
                 saveState(getXP(), getLevel(), badges);
                 updateUI();
             });
