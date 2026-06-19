@@ -25,18 +25,18 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mouseup', () => { drawing = false; });
 
     function randomShapeType() {
-        const types = ['circle', 'square', 'triangle'];
+        const types = ['coin', 'star', 'mushroom'];
         return types[Math.floor(Math.random() * types.length)];
     }
 
     function drawCursor() {
         ctx.save();
-        ctx.shadowColor = "#007bff";
+        ctx.shadowColor = "#fbd000";
         ctx.shadowBlur = 20;
         ctx.beginPath();
         ctx.arc(mouse.x, mouse.y, 14, 0, Math.PI * 2);
-        ctx.strokeStyle = "#007bff";
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#e52521";
+        ctx.lineWidth = 3;
         ctx.stroke();
         ctx.restore();
     }
@@ -59,20 +59,19 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.globalAlpha = shape.alpha;
         ctx.translate(shape.x, shape.y);
         ctx.rotate(shape.rot);
-        ctx.strokeStyle = "#007bff";
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        if (shape.type === 'circle') {
-            ctx.arc(0, 0, shape.radius, 0, Math.PI * 2);
-        } else if (shape.type === 'square') {
-            ctx.rect(-shape.radius, -shape.radius, shape.radius * 2, shape.radius * 2);
-        } else if (shape.type === 'triangle') {
-            ctx.moveTo(0, -shape.radius);
-            ctx.lineTo(shape.radius, shape.radius);
-            ctx.lineTo(-shape.radius, shape.radius);
-            ctx.closePath();
+        
+        ctx.font = `${shape.radius * 2}px Arial`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        if (shape.type === 'coin') {
+            ctx.fillText("🪙", 0, 0);
+        } else if (shape.type === 'star') {
+            ctx.fillText("⭐", 0, 0);
+        } else if (shape.type === 'mushroom') {
+            ctx.fillText("🍄", 0, 0);
         }
-        ctx.stroke();
+        
         ctx.restore();
     }
 
