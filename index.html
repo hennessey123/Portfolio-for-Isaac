@@ -1,95 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Isaac Hennessey | Portfolio</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Isaac Hennessey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5F1E8; --surface:#EBE4D3; --ink:#221E18; --muted:#726A5C;
+    --accent:#C1633C; --rule:#DAD0BB;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#1B1712; --surface:#25211A; --ink:#EFE9DC; --muted:#A69B87;
+      --accent:#E08258; --rule:#3A3428;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#1B1712; --surface:#25211A; --ink:#EFE9DC; --muted:#A69B87;
+    --accent:#E08258; --rule:#3A3428;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Source Serif 4',Georgia,serif; font-weight:500; margin:0;}
+  a{color:inherit;}
+  .wrap{max-width:680px; margin:0 auto; padding:0 24px;}
+  header.top{
+    padding:20px 0; display:flex; justify-content:space-between; align-items:center;
+    font-size:14px; color:var(--muted);
+  }
+  header.top .mark{color:var(--ink); font-weight:600;}
+  nav.top-links a{margin-left:18px; text-decoration:none; color:var(--muted);}
+  nav.top-links a:hover{color:var(--accent);}
+
+  .hero{padding:64px 0 48px; opacity:0; animation:rise .7s ease-out .05s forwards;}
+  .hero .role{color:var(--accent); font-size:15px; margin-bottom:14px;}
+  .hero h1{font-size:clamp(36px,6vw,54px); line-height:1.08; letter-spacing:-0.01em;}
+  .hero p.lede{
+    margin-top:18px; font-size:18px; line-height:1.65; color:var(--muted);
+    max-width:52ch;
+  }
+  @keyframes rise{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+  section{padding:40px 0; border-top:1px solid var(--rule);}
+  section h2{font-size:22px; margin-bottom:18px;}
+
+  .about p{font-size:16px; line-height:1.75; color:var(--ink); max-width:60ch;}
+  .about p + p{margin-top:14px;}
+  .verse{
+    margin-top:22px; padding-left:16px; border-left:2px solid var(--accent);
+    color:var(--muted); font-style:italic; font-size:15px; max-width:52ch;
+  }
+
+  .skill-groups{display:grid; gap:16px;}
+  .skill-row{display:flex; gap:14px; font-size:15px; align-items:baseline;}
+  .skill-row .label{width:110px; flex-shrink:0; color:var(--muted);}
+  .skill-row .items{color:var(--ink);}
+
+  .project-grid{display:grid; gap:16px;}
+  .project{
+    padding:22px; border:1px solid var(--rule); border-radius:10px;
+    background:var(--bg); transition:border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+  }
+  .project:hover{
+    border-color:var(--accent); transform:translateY(-2px);
+    box-shadow:0 10px 24px -16px rgba(0,0,0,.35);
+  }
+  .project h3{font-size:19px; margin-bottom:6px;}
+  .project p{margin:0; font-size:15px; line-height:1.6; color:var(--muted); max-width:56ch;}
+  .project .links{display:flex; gap:18px; margin-top:12px;}
+  .project .link{
+    display:inline-block; font-size:14px; color:var(--accent);
+    text-decoration:none; border-bottom:1px solid transparent;
+  }
+  .project .link:hover{border-bottom-color:var(--accent);}
+
+  footer.contact{
+    padding:44px 0 60px; border-top:1px solid var(--rule);
+  }
+  footer.contact h2{font-size:22px; margin-bottom:8px;}
+  footer.contact p{color:var(--muted); font-size:15px; margin:0 0 20px;}
+  .contact-links{display:flex; flex-wrap:wrap; gap:10px 22px;}
+  .contact-links a{
+    font-size:15px; text-decoration:none; color:var(--ink);
+    padding-bottom:2px; border-bottom:1px solid var(--rule);
+  }
+  .contact-links a:hover{color:var(--accent); border-bottom-color:var(--accent);}
+  .fine{margin-top:36px; font-size:13px; color:var(--muted);}
+</style>
 </head>
 <body>
-    <div id="matrix-intro">
-        <canvas id="matrix-canvas"></canvas>
-    </div>
+<div class="wrap">
 
-    <canvas id="floating-shapes"></canvas>
-
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="nav-logo">Isaac Hennessey</a>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="projects.html">Projects</a>
-                <a href="contact.html">Contact</a>
-                <a href="resume.html">Resume</a>
-                <a href="music.html">Music</a>
-                <a href="baserunner.html">Baserunner</a>
-            </div>
-        </div>
+  <header class="top">
+    <span class="mark">Isaac Hennessey</span>
+    <nav class="top-links">
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
     </nav>
+  </header>
 
-    <main>
-        <header class="hero">
-            <div class="hero-content">
-                <h1>Isaac Hennessey</h1>
-                <p class="subtitle">Software Developer | Musician | Creator</p>
-            </div>
-        </header>
+  <section class="hero">
+    <div class="role">Software Developer, Samford CS &apos;26</div>
+    <h1>I build things at the intersection of software, hardware, and a few too many side projects.</h1>
+    <p class="lede">Based in Birmingham, Alabama. Recent computer science graduate with hands-on experience across web apps, embedded hardware, and applied security — plus a habit of shipping games and tools for fun.</p>
+  </section>
 
-        <section id="skills" class="content-section">
-            <h2>Technical Skills</h2>
-            <div class="skills-container">
-                
-                <div class="skill-card" title="Java">
-                    <img src="images/java-logo.png" alt="Java">
-                    
-                    <span>Java</span>
-                    
-                </div>
-                <a href="baserunner.html"></a>
-                <div class="skill-card" title="SQL">
-                    <img src="images/sql-logo.jpg" alt="SQL">
-                    <span>SQL</span>
-                </div>
-                <div class="skill-card" title="PostgreSQL">
-                    <img src="images/postgresql-logo.png" alt="PostgreSQL">
-                    <span>PostgreSQL</span>
-                </div>
-            </div>
-            
-            <div class="skills-explanation" style="margin-top: 2rem; line-height: 1.6;">
-                <ul style="list-style-type: none; padding: 0;">
-                    <li style="margin-bottom: 0.5rem;"><strong>Languages:</strong> Python (CV), Java (Swing), C (Built simple Lexer), Kotlin (learning OS concepts)</li>
-                    <li style="margin-bottom: 0.5rem;"><strong>Frameworks &amp; Libraries:</strong> Next.js, and React for weather app <a href="https://weatherapp-bice-five.vercel.app" target="_blank" style="color: #4da6ff;">weatherapp-bice-five.vercel.app</a></li>
-                    <li style="margin-bottom: 0.5rem;"><strong>Databases:</strong> PostgreSQL</li>
-                    <li style="margin-bottom: 0.5rem;"><strong>Tools:</strong> Git, VS Code, used vite to test functionality of weather app</li>
-                    <li style="margin-bottom: 0.5rem;"><strong>Design:</strong> Gimp, Photoshop, and Canva</li>
-                </ul>
-            </div>
-        </section>
+  <section id="work">
+    <h2>Selected work</h2>
 
-        <section id="navigation-cards" class="content-section">
-            <a href="projects.html" class="nav-card">
-                <h3>Projects</h3>
-                <p>Explore my recent work and personal projects.</p>
-            </a>
-            <a href="bio.html" class="nav-card">
-                <h3>About Me</h3>
-                <p>Learn more about my background and passions.</p>
-            </a>
-            <a href="contact.html" class="nav-card">
-                <h3>Contact</h3>
-                <p>Get in touch for collaborations or inquiries.</p>
-            </a>
-        </section>
-    </main>
+    <div class="project-grid">
+      <div class="project">
+        <h3>Disaster Relief Inventory System</h3>
+        <p>Inventory management web app built for Southern Baptist Disaster Relief through Samford University — used to track supplies and equipment across relief operations.</p>
+        <div class="links">
+          <a class="link" href="https://sbainventory.samford.edu" target="_blank" rel="noopener">Visit site →</a>
+          <a class="link" href="https://github.com/hennessey123" target="_blank" rel="noopener">GitHub →</a>
+        </div>
+      </div>
 
-    <footer>
-        <p>&copy; 2025 Isaac Hennessey. All Rights Reserved.</p>
-    </footer>
+      <div class="project">
+        <h3>Crashout Wednesday</h3>
+        <p>A browser game where you dodge incoming bombs before they catch up to you — built end-to-end as a personal project.</p>
+        <div class="links">
+          <a class="link" href="https://hennessey123.github.io/Portfolio-for-Isaac/baserunner.html" target="_blank" rel="noopener">Play now →</a>
+          <a class="link" href="https://github.com/hennessey123" target="_blank" rel="noopener">GitHub →</a>
+        </div>
+      </div>
 
-    <script src="js/interactive.js"></script>
+      <div class="project">
+        <h3>Weather App</h3>
+        <p>A Next.js and React weather application, built and tested with Vite.</p>
+        <div class="links">
+          <a class="link" href="https://weatherapp-bice-five.vercel.app" target="_blank" rel="noopener">Visit site →</a>
+          <a class="link" href="https://github.com/hennessey123" target="_blank" rel="noopener">GitHub →</a>
+        </div>
+      </div>
+      <div class="project">
+        <h3>Wingcat</h3>
+        <p>An 8-world flying-cat platformer with wing suits, dive-bomb smashes, and local or online co-op — 64 levels ending in permanent flight.</p>
+        <div class="links">
+          <a class="link" href="https://hennessey123.github.io/new-wingcat/" target="_blank" rel="noopener">Play now →</a>
+          <a class="link" href="https://github.com/hennessey123" target="_blank" rel="noopener">GitHub →</a>
+        </div>
+      </div>
+
+      <div class="project">
+        <h3>Swell Engine</h3>
+        <p>A WebGL2 ocean simulator that models real swell physics — storms generate waves that travel, refract around coastlines, and break for you to surf and skim.</p>
+        <div class="links">
+          <a class="link" href="https://hennessey123.github.io/wavesurfing/" target="_blank" rel="noopener">Try it →</a>
+          <a class="link" href="https://github.com/hennessey123" target="_blank" rel="noopener">GitHub →</a>
+        </div>
+      </div>
+
+      <div class="project">
+        <h3>Turbo Circuit 64</h3>
+        <p>A kart-racing game with 64 tracks, 16 cups, 12 mystery items, and full local two-player support.</p>
+        <div class="links">
+          <a class="link" href="https://hennessey123.github.io/turbocar/" target="_blank" rel="noopener">Play now →</a>
+          <a class="link" href="https://github.com/hennessey123" target="_blank" rel="noopener">GitHub →</a>
+        </div>
+      </div>
+
+      <div class="project">
+        <h3>Atom Realm</h3>
+        <p>A 3D exploration game where you drift through a quantum void absorbing atoms to reassemble into a human — with optional Spotify and mic-reactive visuals.</p>
+        <div class="links">
+          <a class="link" href="https://hennessey123.github.io/atlasoul/" target="_blank" rel="noopener">Play now →</a>
+          <a class="link" href="https://github.com/hennessey123" target="_blank" rel="noopener">GitHub →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Skills</h2>
+    <div class="skill-groups">
+      <div class="skill-row"><span class="label">Languages</span><span class="items">Python, Java, C, Kotlin</span></div>
+      <div class="skill-row"><span class="label">Web</span><span class="items">Next.js, React</span></div>
+      <div class="skill-row"><span class="label">Data</span><span class="items">SQL, PostgreSQL</span></div>
+      <div class="skill-row"><span class="label">Tools</span><span class="items">Git, VS Code, Vite</span></div>
+      <div class="skill-row"><span class="label">Design</span><span class="items">GIMP, Photoshop, Canva</span></div>
+      <div class="skill-row"><span class="label">Hardware</span><span class="items">Raspberry Pi, embedded builds</span></div>
+      <div class="skill-row"><span class="label">Security</span><span class="items">TryHackMe practice labs</span></div>
+    </div>
+  </section>
+
+  <section id="about" class="about">
+    <h2>About</h2>
+    <p>I got my first taste of technology on a Nintendo DS at six years old, and never really put it down. After graduating high school in 2022, I found myself drawn more to math and science than anything else — so I went to study computer science at Samford University.</p>
+    <p>Along the way my sense of what this field could be got a lot bigger, which pushed me to explore a few different directions before landing back where I started — this time with a much clearer idea of why.</p>
+    <div class="verse">Hebrews 11:1 — "Now faith is the substance of things hoped for, the evidence of things not yet seen."</div>
+  </section>
+
+  <footer class="contact" id="contact">
+    <h2>Get in touch</h2>
+    <p>Open to opportunities and always happy to talk about a project.</p>
+    <div class="contact-links">
+      <a href="mailto:xcisaac@icloud.com">Email</a>
+      <a href="https://github.com/hennessey123" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/isaac-hennessey-55222425b/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://www.youtube.com/@isaachennessey679" target="_blank" rel="noopener">YouTube</a>
+    </div>
+    <div class="fine">© 2026 Isaac Hennessey</div>
+  </footer>
+
+</div>
 </body>
 </html>
